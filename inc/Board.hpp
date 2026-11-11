@@ -15,30 +15,37 @@ struct Move
 	uint16_t y;
 };
 
-
 constexpr uint16_t	BoardSize = 19;
+constexpr uint16_t	nCaptureToWin = 5;
 
 class Board
-{
-	public:
-
-		
+{		
 	private:
 		Stone 	_board[BoardSize][BoardSize];
+
+		uint16_t	_nCapture[2] = {0, 0};
+		uint16_t	_nStone[2]  = {0, 0};
 		
 		Stone	_winner = Stone::NONE;
 		bool	_done = false;
 
 		const Settings	&_settings;
 
+	private:
+
+		bool	_makesFree3(const Move move, Stone player)	const;
+		void	_capture2(const Move move, Stone player);
+	
+		bool	_checkWinner(const Move move, PlayerID player);
+
 	public:
 		Board(const Settings &settings);
-		Board(const Board &oldBoard, const Move &playedMove);
+		Board(const Board &oldBoard, const Move &playedMove, PlayerID player);
 
-		bool	hasLegalMove(Stone player)	const;
+		bool	hasLegalMove(PlayerID player)	const;
 
-		bool	isMoveLegal(const Move move, Stone player)	const;
-		void	playStone(const Move move, Stone player);
+		bool	isMoveLegal(const Move move, PlayerID player)	const;
+		void	playStone(const Move move, PlayerID player);
 
 		bool	done(void)	const;
 		Stone	getWinner(void)	const;
