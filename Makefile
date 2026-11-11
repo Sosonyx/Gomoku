@@ -6,8 +6,8 @@ D_SRC = src/
 D_BUILD = .build/
 OBJ =  	$(addprefix $(D_BUILD), $(SRC:.cpp=.o))
 
-CPP =  cpp
-FLAGS = -Wall -Wextra -Werror -MMD -g
+CPP =  c++
+FLAGS = -Wall -Wextra -Werror -MMD -g -std=c++17
 INC = inc/
 IFLAGS =  $(addprefix -I, $(INC))
 LIB_FLAGS = 
