@@ -3,20 +3,11 @@
 #include <exception>
 #include <iostream>
 
-#include "Board.hpp"
+#include <cstdint>
+
 #include "Render.hpp"
-
-enum PlayerID: uint8_t 
-{
-	P1 = 0,
-	P2 = 1,
-};
-
-enum PlayerType: uint8_t 
-{
-	AI = 0,
-	HUMAN = 1
-};
+#include "Board.hpp"
+#include "Enums.hpp"
 
 enum	GameMode
 {
@@ -42,11 +33,11 @@ class Game {
 		Game(Render &render);
 		~Game();
 		
-		void			_routine();
+		void	_routine();
 
-		bool			_menu();
-		Board::Stone	_startGame();
-		void			_renderScore(Board::Stone winner);
+		bool	_menu();
+		Stone	_startGame();
+		void	_renderScore(Stone winner);
 
 	public:
 		static uint8_t	playGame();

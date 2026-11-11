@@ -1,9 +1,11 @@
 #pragma once
 
 #include <cstdint>
+#include <cstring>
+#include <exception>
 
 #include "Game.hpp"
-#include "Render.hpp"
+#include "Enums.hpp"
 
 struct Settings;
 
@@ -13,25 +15,21 @@ struct Move
 	uint16_t y;
 };
 
+
 constexpr uint16_t	BoardSize = 19;
 
 class Board
 {
 	public:
-		enum Stone: uint8_t 
-		{
-			P1 = PlayerID::P1,
-			P2 = PlayerID::P2,
-			NONE,
-		};
+
 		
 	private:
-		Board::Stone 	_board[BoardSize][BoardSize];
+		Stone 	_board[BoardSize][BoardSize];
 		
-		Board::Stone	_winner = Board::Stone::NONE;
+		Stone	_winner = Stone::NONE;
 		bool	_done = false;
 
-		const Settings	&settings;
+		const Settings	&_settings;
 
 	public:
 		Board(const Settings &settings);
@@ -42,6 +40,6 @@ class Board
 		bool	isMoveLegal(const Move move, Stone player)	const;
 		void	playStone(const Move move, Stone player);
 
-		bool			done(void)	const;
-		Board::Stone	getWinner(void)	const;
+		bool	done(void)	const;
+		Stone	getWinner(void)	const;
 };

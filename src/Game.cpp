@@ -1,6 +1,6 @@
 #include "Game.hpp"
 
-Board::Stone	Game::_startGame() {
+Stone	Game::_startGame() {
 	Board	board(_settings);
 	
 	PlayerType	players[2] = {PlayerType::AI, PlayerType::HUMAN};	// From settings, first to p[layer] 
@@ -10,13 +10,14 @@ Board::Stone	Game::_startGame() {
 	//		do the choices and shits
 	while (!board.done()) {
 		Move move;
-		if (players[turn] == PlayerType::AI) {
+		if (players[toInt(turn)] == PlayerType::AI) {
 			// get IA move
 		} else {
 
 		}
 		// Play move on board
 		// Render move 
+		(void)move;
 		if (turn == PlayerID::P1)	turn = PlayerID::P2;
 		else						turn = PlayerID::P1;
 	}
@@ -37,14 +38,22 @@ void	Game::_routine() {
 		if (exitMenu == true)
 			break ;
 		
-		Board::Stone winner = _startGame();
+		Stone winner = _startGame();
 		_renderScore(winner);
 	}
 }
 
-void Game::_renderScore(Board::Stone winner) {
-	
+
+
+void Game::_renderScore(Stone winner) {
+	(void)winner;
 }
+
+Game::Game(Render &render)
+	:	_render(render)
+{}
+
+Game::~Game() {}
 
 uint8_t	Game::playGame() {
 	try {
