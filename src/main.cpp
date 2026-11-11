@@ -1,9 +1,6 @@
+#include "Game.hpp"
 
-
-int	main(int ac, char *av[])
+int	main(void)
 {
-
-	return (0);
-	(void)ac;
-	(void)av;
+	return (Game::playGame());
 }

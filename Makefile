@@ -1,6 +1,6 @@
 NAME =  Gomoku
 
-SRC =  main.cpp
+SRC =  main.cpp  Board.cpp  Game.cpp  Player.cpp  Render.cpp
 D_SRC = src/
 
 D_BUILD = .build/
