@@ -19,7 +19,7 @@ constexpr uint16_t	BoardSize = 19;
 constexpr uint16_t	nCaptureToWin = 5;
 
 class Board
-{		
+{	
 	private:
 		Stone 	_board[BoardSize][BoardSize];
 

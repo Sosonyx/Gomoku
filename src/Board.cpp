@@ -20,6 +20,7 @@ Board::Board(const Board &oldBoard, const Move &playedMove, PlayerID player)
 
 
 bool	Board::_checkWinner(const Move move, PlayerID player) {
+	// Todo: add can win by capture to settings
 	// if can win by capture
 	if (_nCapture[toInt(PlayerID::P1)] >= nCaptureToWin) {
 		_winner = Stone::P1;
