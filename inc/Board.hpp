@@ -16,9 +16,11 @@ struct Move
 	uint16_t x = 0;
 	uint16_t y = 0;
 	inline Move(void) {};
-	inline Move(uint16_t x, uint16_t y) {
-		if (x >= BoardSize || y >= BoardSize)
-			throw (std::runtime_error("Move(x, y) creation is oob"));
+	inline Move(uint16_t _x, uint16_t _y) {
+		// if (x >= BoardSize || y >= BoardSize)
+		// 	throw (std::runtime_error("Move(x, y) creation is oob"));
+		x = _x;
+		y = _y;
 	}
 };
 
