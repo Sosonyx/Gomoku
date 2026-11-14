@@ -25,9 +25,10 @@ struct Settings
 
 class Game {
 	private:
-		Render	_render;
+		Render	&_render;
 
 		Settings	_settings;
+		PlayerType	_players[2] = {PlayerType::HUMAN, PlayerType::HUMAN};
 
 	private:
 		Game(Render &render);

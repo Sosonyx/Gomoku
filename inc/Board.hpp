@@ -77,4 +77,5 @@ class Board
 
 		bool	done(void)	const;
 		Stone	getWinner(void)	const;
+		uint16_t getCapture(PlayerID player) const;
 };

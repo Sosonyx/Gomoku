@@ -88,3 +88,7 @@ Stone	Board::getWinner(void)	const {
 		throw (std::runtime_error("GetWinner call when Board is not done"));
 	return (_winner);
 }
+
+uint16_t Board::getCapture(PlayerID player) const {
+	return (_nCapture[toInt(player)]);
+}
