@@ -12,17 +12,19 @@ class Render
 		SDL_Surface 	*_surface; // The surface is used to load images and then convert them to textures
 			
 		void renderBackground();
+		void renderGrid();
 		void renderStones(Board &board);
-		void renderStone(int x, int y);
+		void renderStone(int x, int y, Stone stone, bool preview = false);
+		Move pixelToGrid(int x, int y) const;
 	
 	public:
 		Render();
 		~Render();
 		void initRender();
-		
+
 		void renderMenu();
 		void renderGame(Board &board);
 		bool isStartButton(int x, int y) const;
-		void detectPlayerMove(Board &board, PlayerID player);
+		Move detectPlayerMove(Board &board, PlayerID player);
 		// void	placeStone(Move);
 };
