@@ -10,6 +10,8 @@ struct StoneGroup {
 	const uint16_t	len;
 	const StoneSide	stone;
 
+	StoneGroup(void)
+		:	len(static_cast<uint16_t>(-1)), stone(StoneSide::NONE)	{}
 	StoneGroup(uint16_t len, StoneSide stone)
 		:	len(len), stone(stone)	{}
 	
@@ -33,7 +35,7 @@ struct StoneGroup {
 template <std::uint16_t N = BoardSize>
 class	SideView {
 	private:
-		StoneGroup	_arr[N] = {};
+		StoneGroup	_arr[N];
 		uint16_t	_size = 0;
 		uint16_t	_len = 0;
 

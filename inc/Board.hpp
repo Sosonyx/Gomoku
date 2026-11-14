@@ -9,13 +9,21 @@
 
 struct Settings;
 
+constexpr uint16_t	BoardSize = 19;
+
 struct Move
 {
-	uint16_t x;
-	uint16_t y;
+	uint16_t x = 0;
+	uint16_t y = 0;
+	inline Move(void) {};
+	inline Move(uint16_t x, uint16_t y) {
+		if (x >= BoardSize || y >= BoardSize)
+			throw (std::runtime_error("Move(x, y) creation is oob"));
+	}
 };
 
-constexpr uint16_t	BoardSize = 19;
+using Position = Move;
+
 constexpr uint16_t	nCaptureToWin = 5;
 
 class Board
@@ -56,6 +64,11 @@ class Board
 			if (x >= BoardSize || y >= BoardSize)
 				std::runtime_error("getStone call is OOB");
 			return (_board[x][y]);
+		}
+		inline Stone	getStoneAt(const Position &pos) const{
+			if (pos.x >= BoardSize || pos.y >= BoardSize)
+				std::runtime_error("getStone call is OOB");
+			return (_board[pos.x][pos.y]);
 		}
 
 		// Stone	getStoneAt(uint16_t x, uint16_t y)	const;
