@@ -4,7 +4,9 @@ SRC =  	main.cpp  \
 		Board.cpp  \
 		Game.cpp	\
 		Player.cpp  \
-		Render.cpp
+		Render.cpp	\
+		AnalyseBoard/Analyse.cpp	\
+		AnalyseBoard/LineView.cpp	\
 
 D_SRC = src/
 
@@ -13,7 +15,7 @@ OBJ =  	$(addprefix $(D_BUILD), $(SRC:.cpp=.o))
 
 CPP =  c++
 FLAGS = -Wall -Wextra -Werror -MMD -O3 -g -std=c++17
-INC = inc/
+INC = inc/ inc/AnalyseBoard
 SDL_LIBS = sdl2 SDL2_ttf SDL2_image SDL2_gfx
 IFLAGS =  $(addprefix -I, $(INC)) $(shell pkg-config --cflags $(SDL_LIBS))
 LIB_FLAGS = $(shell pkg-config --libs $(SDL_LIBS))

@@ -8,10 +8,12 @@
 
 struct StoneGroup {
 	const uint16_t	len;
-	const StoneSide	stone;
+	const Stone	stone;
 
-	StoneGroup(uint16_t len, StoneSide stone)
-		:	len(len), stone(stone)	{}
+	StoneGroup(void)
+		:	len(BoardSize), stone(Stone::NONE)	{}
+	StoneGroup(uint16_t _len, Stone _stone)
+		:	len(_len), stone(_stone)	{}
 	
 	inline bool	operator==(const StoneGroup &other) {
 		return (stone == other.stone && len == other.len);
@@ -33,7 +35,7 @@ struct StoneGroup {
 template <std::uint16_t N = BoardSize>
 class	SideView {
 	private:
-		StoneGroup	_arr[N] = {};
+		StoneGroup	_arr[N];
 		uint16_t	_size = 0;
 		uint16_t	_len = 0;
 

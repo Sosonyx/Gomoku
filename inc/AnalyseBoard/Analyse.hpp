@@ -19,5 +19,4 @@ struct Analyse {
 	public:
 		Analyse(const Board &board, const Move pos);					// Look at a position
 		Analyse(const Board &board, const Move move, PlayerID player);	// Look at a move
-	
 };
