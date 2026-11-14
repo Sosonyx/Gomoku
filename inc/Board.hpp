@@ -4,7 +4,6 @@
 #include <cstring>
 #include <exception>
 
-#include "Game.hpp"
 #include "Enums.hpp"
 
 struct Settings;
@@ -39,6 +38,8 @@ class Board
 
 		bool	isMoveLegal(const Move move, Stone player)	const;
 		void	playStone(const Move move, Stone player);
+
+		Stone	getStoneAt(uint16_t x, uint16_t y)	const;
 
 		bool	done(void)	const;
 		Stone	getWinner(void)	const;
