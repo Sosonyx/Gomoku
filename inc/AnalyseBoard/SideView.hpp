@@ -8,12 +8,12 @@
 
 struct StoneGroup {
 	const uint16_t	len;
-	const StoneSide	stone;
+	const Stone	stone;
 
 	StoneGroup(void)
-		:	len(static_cast<uint16_t>(-1)), stone(StoneSide::NONE)	{}
-	StoneGroup(uint16_t len, StoneSide stone)
-		:	len(len), stone(stone)	{}
+		:	len(BoardSize), stone(Stone::NONE)	{}
+	StoneGroup(uint16_t _len, Stone _stone)
+		:	len(_len), stone(_stone)	{}
 	
 	inline bool	operator==(const StoneGroup &other) {
 		return (stone == other.stone && len == other.len);

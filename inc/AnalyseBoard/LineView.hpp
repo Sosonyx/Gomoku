@@ -44,7 +44,7 @@ class LineView {
 
 	public:
 		LineView(const Board &board, Direction dir, const Position pos);				// Look at a position
-		LineView(const Board &board, Direction dir, const Move move, PlayerID player);	// Look at a move
+		LineView(const Board &board, Direction dir, const Move move, PlayerID playerID);	// Look at a move
 
 		inline uint16_t	getLen(void) const {	// Returns the line len
 			return (_lineLen);
