@@ -64,7 +64,7 @@ void	LineView::_setGroupLen(void) {
 LineView::LineView(const Board &board, Direction dir, const Position pos)
 :		_board(board), _pos(pos), _stoneAtPos(board.getStoneAt(pos)), _dir(dir),
 		_lineLen(_getLineLen(pos, dir)),
-		_iPos(_getIPos(pos, dir))	// Get posI
+		_iPos(_getIPos(pos, dir))
 {
 	if (_stoneAtPos != Stone::NONE)
 		_setGroupLen();
@@ -73,8 +73,7 @@ LineView::LineView(const Board &board, Direction dir, const Position pos)
 LineView::LineView(const Board &board, Direction dir, const Move move, PlayerID playerID)	// Look at a move
 :		_board(board), _pos(move), _stoneAtPos(toStone(playerID)), _dir(dir),
 		_lineLen(_getLineLen(move, dir)),
-		_iPos(_getIPos(move, dir))	// Get posI
+		_iPos(_getIPos(move, dir))
 {
-	if (_stoneAtPos != Stone::NONE)
-		_setGroupLen();
+	_setGroupLen();
 }
