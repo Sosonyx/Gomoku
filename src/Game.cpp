@@ -1,30 +1,30 @@
 #include "Game.hpp"
 
 Stone	Game::_startGame() {
-	Board	board(_settings);
-	
-	_render.renderGame(board); // temporary there jsp si ca reste ici
-	// Get move from player
-	// Play move on board
-	
-	PlayerType	players[2] = {PlayerType::AI, PlayerType::HUMAN};	// From settings, first to p[layer] 
+	Board		board(_settings);
+	PlayerType	players[2] = {PlayerType::HUMAN, PlayerType::HUMAN};	// From settings, first to p[layer] 
 	PlayerID	turn = PlayerID::P1;
 
-	// if settings->gamemode != normal
-	//		do the choices and shits
 	while (!board.done()) {
+		_render.renderGame(board); // temporary there jsp si ca reste ici
+
 		Move move;
 		if (players[toInt(turn)] == PlayerType::AI) {
 			// get IA move
+			// move = _getIAMove
 		} else {
-			_render.detectPlayerMove(board, turn); // temporaryyy
+			move =_render.detectPlayerMove(board, turn); // temporaryyy
 		}
-		// Play move on board
-		// Render move 
-		(void)move;
+		if (move.x == static_cast<uint16_t>(-1) && move.y == static_cast<uint16_t>(-1)) {
+			//handle invalid move if there is ones
+			continue; // temporary, just to test the loop
+		}
+		board.playStone(move, turn);
+
 		if (turn == PlayerID::P1)	turn = PlayerID::P2;
 		else						turn = PlayerID::P1;
 	}
+	// _render.renderGame(board); // temporary
 
 	return (board.getWinner());
 }

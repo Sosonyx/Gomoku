@@ -50,7 +50,7 @@ bool	Board::_makesFree3(const Move move, Stone player) const {
 bool	Board::isMoveLegal(const Move move, PlayerID player) const {
 	if (move.x >= BoardSize || move.y >= BoardSize)
 		return (false);
-	if (_board[move.y][move.x] != Stone::NONE)
+	if (_board[move.x][move.y] != Stone::NONE)
 		return (false);
 	if (_settings.free3 && _makesFree3(move, toStone(player)))
 		return (false);
