@@ -17,7 +17,7 @@ Stone	Game::_startGame() {
 		if (players[toInt(turn)] == PlayerType::AI) {
 			// get IA move
 		} else {
-			_render.detectPlayerMove(board, static_cast<Stone>(turn)); // temporaryyy
+			_render.detectPlayerMove(board, turn); // temporaryyy
 		}
 		// Play move on board
 		// Render move 

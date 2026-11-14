@@ -23,6 +23,6 @@ class Render
 		void renderMenu();
 		void renderGame(Board &board);
 		bool isStartButton(int x, int y) const;
-		void detectPlayerMove(Board &board, Stone player);
+		void detectPlayerMove(Board &board, PlayerID player);
 		// void	placeStone(Move);
 };

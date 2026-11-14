@@ -95,7 +95,7 @@ bool Render::isStartButton(int x, int y) const
     return (x >= 300 && x < 500 && y >= 250 && y < 330);
 }
 
-void Render::detectPlayerMove(Board &board, Stone player)
+void Render::detectPlayerMove(Board &board, PlayerID player)
 {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {

@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <cstring>
 #include <exception>
+#include <stdexcept>
 
 #include "Enums.hpp"
 
@@ -57,9 +58,8 @@ class Board
 			return (_board[x][y]);
 		}
 
-		Stone	getStoneAt(uint16_t x, uint16_t y)	const;
+		// Stone	getStoneAt(uint16_t x, uint16_t y)	const;
 
 		bool	done(void)	const;
 		Stone	getWinner(void)	const;
 };
-
