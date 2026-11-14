@@ -4,7 +4,6 @@
 #include <cstring>
 #include <exception>
 
-#include "Game.hpp"
 #include "Enums.hpp"
 
 struct Settings;
@@ -57,6 +56,8 @@ class Board
 				std::runtime_error("getStone call is OOB");
 			return (_board[x][y]);
 		}
+
+		Stone	getStoneAt(uint16_t x, uint16_t y)	const;
 
 		bool	done(void)	const;
 		Stone	getWinner(void)	const;

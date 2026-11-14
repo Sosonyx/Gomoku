@@ -1,16 +1,22 @@
 NAME =  Gomoku
 
-SRC =  main.cpp  Board.cpp  Game.cpp  Player.cpp  Render.cpp
+SRC =  	main.cpp  \
+		Board.cpp  \
+		Game.cpp	\
+		Player.cpp  \
+		Render.cpp
+
 D_SRC = src/
 
 D_BUILD = .build/
 OBJ =  	$(addprefix $(D_BUILD), $(SRC:.cpp=.o))
 
 CPP =  c++
-FLAGS = -Wall -Wextra -Werror -MMD -g -std=c++17
+FLAGS = -Wall -Wextra -Werror -MMD -O3 -g -std=c++17
 INC = inc/
-IFLAGS =  $(addprefix -I, $(INC))
-LIB_FLAGS = 
+SDL_LIBS = sdl2 SDL2_ttf SDL2_image SDL2_gfx
+IFLAGS =  $(addprefix -I, $(INC)) $(shell pkg-config --cflags $(SDL_LIBS))
+LIB_FLAGS = $(shell pkg-config --libs $(SDL_LIBS))
 
 RM =  rm -rf
 
