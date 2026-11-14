@@ -14,12 +14,20 @@ enum class PlayerID : uint8_t
 	P2 = 1,
 };
 
-enum Stone : uint8_t 
+enum class Stone : uint8_t 
 {
 	P1 = static_cast<uint8_t>(PlayerID::P1),
 	P2 = static_cast<uint8_t>(PlayerID::P2),
 	NONE,
 };
+
+enum class StoneSide : uint8_t 
+{
+	ALLY,
+	OPP,
+	NONE = static_cast<uint8_t>(Stone::NONE),
+};
+
 
 static inline constexpr
 PlayerID	getOther(const PlayerID id) {
@@ -41,3 +49,9 @@ Stone	getOther(const Stone stone) {
 	return (stone == Stone::P1 ? Stone::P2 : Stone::P1);
 }
 
+static inline constexpr
+StoneSide	toStoneSide(const Stone stone, const PlayerID playerID) {
+	if (stone == Stone::NONE)
+		return (StoneSide::NONE);
+	return (toStone(playerID) == stone ? StoneSide::ALLY : StoneSide::OPP);
+}

@@ -19,9 +19,13 @@ constexpr uint16_t	BoardSize = 19;
 constexpr uint16_t	nCaptureToWin = 5;
 
 class Board
-{	
+{
+	public:
+		template<typename T>
+		using BoardArr = T[BoardSize][BoardSize];
+
 	private:
-		Stone 	_board[BoardSize][BoardSize];
+		BoardArr<Stone> 	_board;
 
 		uint16_t	_nCapture[2] = {0, 0};
 		uint16_t	_nStone[2]  = {0, 0};
@@ -47,6 +51,14 @@ class Board
 		bool	isMoveLegal(const Move move, PlayerID player)	const;
 		void	playStone(const Move move, PlayerID player);
 
+		
+		inline Stone	getStoneAt(const uint16_t x, const uint16_t y) const{
+			if (x >= BoardSize || y >= BoardSize)
+				std::runtime_error("getStone call is OOB");
+			return (_board[x][y]);
+		}
+
 		bool	done(void)	const;
 		Stone	getWinner(void)	const;
 };
+

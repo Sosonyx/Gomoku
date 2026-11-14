@@ -3,7 +3,7 @@
 Board::Board(const Settings &settings)
 :	_settings(settings)
 {
-	std::memset(_board, Stone::NONE, sizeof(_board));
+	std::memset(_board, static_cast<uint8_t>(Stone::NONE), sizeof(_board));
 }
 
 Board::Board(const Board &oldBoard, const Move &playedMove, PlayerID player)
