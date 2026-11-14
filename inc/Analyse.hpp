@@ -10,7 +10,7 @@ constexpr uint8_t	nDirection = 4;
 
 struct StoneGroup {
 	uint16_t	len;
-	Stone		stone;
+	Stone		stone; // Do ally : opp : none ?
 };
 
 class Line {
