@@ -6,6 +6,9 @@
 #include "Board.hpp"
 #include "SideView.hpp"
 
+#include <iostream>	//tmp
+
+
 constexpr uint8_t	nDirection = 4;
 class LineView {
 	public:	// PLUS_DIAG is y = x, MINUS_DIAG is y = -x
@@ -42,17 +45,20 @@ class LineView {
 
 		void	_setGroupLen(void);	// Calculate the len of consecutive pieces of the _stoneAtPos type at _pos in _dir direction
 
-	public:
-		LineView(const Board &board, Direction dir, const Position pos);				// Look at a position
+		
+		public:
+		LineView(const Board &board, Direction dir, const Position pos);					// Look at a position
 		LineView(const Board &board, Direction dir, const Move move, PlayerID playerID);	// Look at a move
-
+		
 		inline uint16_t	getLen(void) const {	// Returns the line len
 			return (_lineLen);
 		}
 		inline uint16_t	getGroupLen(void) const {	// Returns the len of consecutive pieces of the _stoneAtPos type at _pos in _dir direction
 			return (_groupLen);
 		}
-
+		
 		const SideView<BoardSize>	&getViewNegative(void);	// View top the left / top in the vertical case
 		const SideView<BoardSize>	&getViewPositive(void);	// View to the right / bot in the vertical case
+		
+		void	debug(void) const;
 };

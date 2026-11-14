@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include "LineView.hpp"
 
 Stone	Game::_startGame() {
 	Board		board(_settings);
@@ -20,6 +21,9 @@ Stone	Game::_startGame() {
 			continue; // temporary, just to test the loop
 		}
 		board.playStone(move, turn);
+
+		LineView	LV(board, LineView::Direction::MINUS_DIAG, move);
+		LV.debug();
 
 		if (turn == PlayerID::P1)	turn = PlayerID::P2;
 		else						turn = PlayerID::P1;

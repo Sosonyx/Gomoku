@@ -51,6 +51,7 @@ class Board
 		void	_capture2(const Move move, Stone player);
 	
 		bool	_checkWinner(const Move move, PlayerID player);
+		bool	_checkWinBy5(const PlayerID player);
 
 	public:
 		Board(const Settings &settings);

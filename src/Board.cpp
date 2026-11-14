@@ -20,6 +20,15 @@ Board::Board(const Board &oldBoard, const Move &playedMove, PlayerID player)
 	playStone(playedMove, player);	// Update board
 }
 
+bool	Board::_checkWinBy5(const PlayerID player) {
+	// if can win
+	//		if cannot be taken -> WIN
+	//		else	FLAG
+	// At end of other player turn, if flag, check if i can still win <- check for his loss Before we check for his win
+	// 
+	(void) player;
+	return (false);
+}
 
 bool	Board::_checkWinner(const Move move, PlayerID player) {
 	// Todo: add can win by capture to settings
@@ -32,7 +41,7 @@ bool	Board::_checkWinner(const Move move, PlayerID player) {
 		_winner = Stone::P2;
 		return (_done = true);
 	}
-	if	(false)  {// Check if we did 5 in a row
+	if (false)  {// Check if we did 5 in a row
 		(void)move;
 		_winner = player == PlayerID::P1 ? Stone::P1 : Stone::P2;
 		return (_done = true);
