@@ -68,7 +68,7 @@ void	Board::_capture2(const Move move, Stone player) {
 
 void	Board::playStone(const Move move, PlayerID player) {
 	if (!isMoveLegal(move, player))
-		throw ("Stone played on board is not legal");
+		throw (std::runtime_error("Stone played on board is not legal"));
 
 	_board[move.x][move.y] = toStone(player);
 	++_nStone[toInt(player)];

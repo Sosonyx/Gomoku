@@ -3,6 +3,7 @@
 
 #include <cstdio>
 #include <iostream>
+#include <stdexcept>
 #include <SDL2/SDL2_gfxPrimitives.h>
 
 namespace
@@ -34,41 +35,45 @@ Render::Render()
 
 Render::~Render()
 {
-    if (this->_renderer)
-        SDL_DestroyRenderer(this->_renderer);
-    if (this->_window)
-        SDL_DestroyWindow(this->_window);
     if (this->_texture)
         SDL_DestroyTexture(this->_texture);
     if (this->_surface)
         SDL_FreeSurface(this->_surface);
     if (this->_font)
         TTF_CloseFont(this->_font);
+    if (this->_renderer)
+        SDL_DestroyRenderer(this->_renderer);
+    if (this->_window)
+        SDL_DestroyWindow(this->_window);
     TTF_Quit();
+    SDL_Quit();
 }
 
 // ---------------- Initialization ----------------
 void Render::initRender()
 {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        std::cerr << "SDL not initialized - SDL_Error: " << SDL_GetError() << std::endl;
-        return;
+        throw (std::runtime_error(
+            std::string("SDL not initialized: ") + SDL_GetError()));
     }
     if (TTF_Init() < 0) {
-        std::cerr << "SDL_ttf not initialized - TTF_Error: "
-                  << TTF_GetError() << std::endl;
-        return;
+        throw (std::runtime_error(
+            std::string("SDL_ttf not initialized: ") + TTF_GetError()));
     }
     this->_window = SDL_CreateWindow("Gomoku", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WindowWidth, WindowHeight, SDL_WINDOW_SHOWN);
     if (!this->_window) {
-        std::cerr << "Window could not be created - SDL_Error: " << SDL_GetError() << std::endl;
-        return;
+        throw (std::runtime_error(
+            std::string("Window could not be created: ") + SDL_GetError()));
     }
 
     this->_renderer = SDL_CreateRenderer(this->_window, -1, SDL_RENDERER_ACCELERATED);
     if (!this->_renderer) {
-        std::cerr << "Renderer could not be created -SDL_Error: " << SDL_GetError() << std::endl;
-        return;
+        this->_renderer = SDL_CreateRenderer(this->_window, -1,
+            SDL_RENDERER_SOFTWARE);
+    }
+    if (!this->_renderer) {
+        throw (std::runtime_error(
+            std::string("Renderer could not be created: ") + SDL_GetError()));
     }
 
     this->_font = TTF_OpenFont(
