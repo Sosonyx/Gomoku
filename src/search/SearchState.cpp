@@ -66,3 +66,32 @@ int SearchState::generateMoves(Move moves[]) const {
 
     return (count);
 }
+
+bool	SearchState::makesFive(int x, int y) const {
+	const Stone	me = sGrid[x][y];
+	const int	dirs[4][2] = { {1, 0}, {0, 1}, {1, 1}, {1, -1} };
+
+	for (const auto &d : dirs) {
+		int	count = 1;
+
+		for (int k = 1; k < 5; ++k) {
+			const int nx = x + d[0] * k;
+			const int ny = y + d[1] * k;
+			if (nx < 0 || nx >= BoardSize || ny < 0 || ny >= BoardSize
+				|| sGrid[nx][ny] != me)
+				break ;
+			++count;
+		}
+		for (int k = 1; k < 5; ++k) {
+			const int nx = x - d[0] * k;
+			const int ny = y - d[1] * k;
+			if (nx < 0 || nx >= BoardSize || ny < 0 || ny >= BoardSize
+				|| sGrid[nx][ny] != me)
+				break ;
+			++count;
+		}
+		if (count >= 5)
+			return (true);
+	}
+	return (false);
+}

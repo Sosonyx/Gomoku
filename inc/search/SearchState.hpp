@@ -17,5 +17,8 @@ struct SearchState {
 
     void place(int x, int y, Stone player);
     void unplace(int x, int y);
+
     int generateMoves(Move moves[]) const;
+
+    bool makesFive(int x, int y);
 };

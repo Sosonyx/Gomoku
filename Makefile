@@ -7,6 +7,7 @@ SRC =  	main.cpp  \
 		render/Render.cpp	\
 		analysis/Analyse.cpp	\
 		analysis/LineView.cpp	\
+		search/Search.cpp	\
 		search/SearchState.cpp	\
 
 D_SRC = src/

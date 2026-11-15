@@ -1,11 +1,11 @@
 #pragma once
 
 #include "board/Board.hpp"
-#include "SearchState.hpp"
+#include "search/SearchState.hpp"
+
+Move findBestMove(const Board &board, PlayerID player);
 
 class Search {
     public:
-        Search();
-        ~Search();
         Move findBestMove(const Board &board, PlayerID player);
 };

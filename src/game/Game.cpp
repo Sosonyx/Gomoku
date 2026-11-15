@@ -1,4 +1,5 @@
 #include "game/Game.hpp"
+#include "search/Search.hpp"
 
 #include <chrono>
 
@@ -15,8 +16,7 @@ Stone	Game::_startGame() {
 		Move move;
 		const auto moveStart = std::chrono::steady_clock::now();
 		if (_players[toInt(turn)] == PlayerType::AI) {
-			// get IA move
-			// move = _getIAMove
+			move = findBestMove(board, turn);
 		} else {
 			move = _render.detectPlayerMove(board, turn, lastPlayer, lastMoveTime,
 				board.getCapture(PlayerID::P1), board.getCapture(PlayerID::P2));
