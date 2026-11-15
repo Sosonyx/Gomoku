@@ -3,8 +3,8 @@
 #include <cstdint>
 #include <exception>
 
-#include "Enums.hpp"
-#include "Board.hpp"
+#include "core/Enums.hpp"
+#include "board/Board.hpp"
 
 struct StoneGroup {
 	const uint16_t	len;

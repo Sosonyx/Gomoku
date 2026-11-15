@@ -5,7 +5,7 @@
 #include <exception>
 #include <stdexcept>
 
-#include "Enums.hpp"
+#include "core/Enums.hpp"
 
 struct Settings;
 
@@ -77,5 +77,6 @@ class Board
 
 		bool	done(void)	const;
 		Stone	getWinner(void)	const;
+		uint64_t evaluate(const Board &b, PlayerID p);
 		uint16_t getCapture(PlayerID player) const;
 };

@@ -2,9 +2,9 @@
 
 #include <cstdint>
 
-#include "Enums.hpp"
-#include "Board.hpp"
-#include "SideView.hpp"
+#include "core/Enums.hpp"
+#include "board/Board.hpp"
+#include "analysis/SideView.hpp"
 
 constexpr uint8_t	nDirection = 4;
 class LineView {

@@ -5,9 +5,9 @@
 
 #include <cstdint>
 
-#include "Render.hpp"
-#include "Board.hpp"
-#include "Enums.hpp"
+#include "render/Render.hpp"
+#include "board/Board.hpp"
+#include "core/Enums.hpp"
 
 enum	GameMode
 {

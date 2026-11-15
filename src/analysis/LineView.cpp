@@ -1,4 +1,4 @@
-#include "LineView.hpp"
+#include "analysis/LineView.hpp"
 
 LineView::DirVector	LineView::dirVec[nDirection] = {
 	[static_cast<uint16_t>(Direction::HORIZONTAL)]	= {.x = 1, .y = 0},

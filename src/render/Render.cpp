@@ -1,5 +1,5 @@
-#include "Render.hpp"
-#include "Board.hpp"
+#include "render/Render.hpp"
+#include "board/Board.hpp"
 
 #include <cstdio>
 #include <iostream>
@@ -188,8 +188,7 @@ void Render::renderText(const char *text, int x, int y, int size, bool light)
     if (!this->_font)
         return;
     if (TTF_SetFontSize(this->_font, size) < 0) {
-        std::cerr << "Font size could not be changed - TTF_Error: "
-                  << TTF_GetError() << std::endl;
+        std::cerr << "Font size could not be changed - TTF_Error: " << TTF_GetError() << std::endl;
         return;
     }
 

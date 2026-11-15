@@ -3,9 +3,9 @@
 #include <cstdint>
 #include <vector>
 
-#include "Board.hpp"
-#include "Game.hpp"
-#include "LineView.hpp"
+#include "board/Board.hpp"
+#include "game/Game.hpp"
+#include "analysis/LineView.hpp"
 
 struct Analyse {
 	public:

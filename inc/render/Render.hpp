@@ -2,8 +2,8 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
-#include "Board.hpp"
-#include "Enums.hpp"
+#include "board/Board.hpp"
+#include "core/Enums.hpp"
 
 class Render
 {

@@ -1,5 +1,5 @@
-#include "Board.hpp"
-#include "Game.hpp"
+#include "board/Board.hpp"
+#include "game/Game.hpp"
 #include <stdexcept>
 
 Board::Board(const Settings &settings)
@@ -92,3 +92,8 @@ Stone	Board::getWinner(void)	const {
 uint16_t Board::getCapture(PlayerID player) const {
 	return (_nCapture[toInt(player)]);
 }
+
+// Test	
+// uint64_t Board::evaluate(const Board &b, PlayerID p) {
+//     return 0;
+// }
