@@ -30,6 +30,21 @@ bool	Board::_checkWinBy5(const PlayerID player) {
 	return (false);
 }
 
+void	Board::_iterOnDiag(const uint16_t dX, const uint16_t dY) {
+	const uint16_t	lenLine = (dX < (BoardSize / 2)) ? dX : BoardSize - dX - 1;
+	for (uint16_t i = 1; i <= lenLine; ++i) {
+		playStone(Position(dX + i, dY - i), PlayerID::P1);
+		playStone(Position(dX - i, dY + i), PlayerID::P1);
+	}
+	playStone(Position(dX, dY), PlayerID::P1);
+}
+
+void	Board::_checkEntierBoardByOnlyDoingDiag(void) {
+	for (uint16_t i = 2; i < BoardSize; i += 3) {
+		_iterOnDiag(i, i);
+	}
+}
+
 bool	Board::_checkWinner(const Move move, PlayerID player) {
 	// Todo: add can win by capture to settings
 	// if can win by capture

@@ -65,12 +65,12 @@ class Board
 		
 		inline Stone	getStoneAt(const uint16_t x, const uint16_t y) const{
 			if (x >= BoardSize || y >= BoardSize)
-				std::runtime_error("getStone call is OOB");
+				throw (std::runtime_error("getStone call is OOB"));
 			return (_board[x][y]);
 		}
 		inline Stone	getStoneAt(const Position &pos) const{
 			if (pos.x >= BoardSize || pos.y >= BoardSize)
-				std::runtime_error("getStone call is OOB");
+				throw (std::runtime_error("getStone call is OOB"));
 			return (_board[pos.x][pos.y]);
 		}
 
@@ -78,4 +78,8 @@ class Board
 
 		bool	done(void)	const;
 		Stone	getWinner(void)	const;
+
+		void	_checkEntierBoardByOnlyDoingDiag(void);
+		void	_iterOnDiag(uint16_t dX, uint16_t dY);
+
 };

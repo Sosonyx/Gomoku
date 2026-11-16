@@ -3,31 +3,34 @@
 
 Stone	Game::_startGame() {
 	Board		board(_settings);
-	PlayerType	players[2] = {PlayerType::HUMAN, PlayerType::HUMAN};	// From settings, first to p[layer] 
-	PlayerID	turn = PlayerID::P1;
+	// PlayerType	players[2] = {PlayerType::HUMAN, PlayerType::HUMAN};	// From settings, first to p[layer] 
+	// PlayerID	turn = PlayerID::P1;
 
-	while (!board.done()) {
-		_render.renderGame(board); // temporary there jsp si ca reste ici
+	// while (!board.done()) {
+	// 	_render.renderGame(board); // temporary there jsp si ca reste ici
 
-		Move move;
-		if (players[toInt(turn)] == PlayerType::AI) {
-			// get IA move
-			// move = _getIAMove
-		} else {
-			move =_render.detectPlayerMove(board, turn); // temporaryyy
-		}
-		if (move.x == static_cast<uint16_t>(-1) && move.y == static_cast<uint16_t>(-1)) {
-			//handle invalid move if there is ones
-			continue; // temporary, just to test the loop
-		}
-		board.playStone(move, turn);
+	// 	Move move;
+	// 	if (players[toInt(turn)] == PlayerType::AI) {
+	// 		// get IA move
+	// 		// move = _getIAMove
+	// 	} else {
+	// 		move =_render.detectPlayerMove(board, turn); // temporaryyy
+	// 	}
+	// 	if (move.x == static_cast<uint16_t>(-1) && move.y == static_cast<uint16_t>(-1)) {
+	// 		//handle invalid move if there is ones
+	// 		continue; // temporary, just to test the loop
+	// 	}
+	// 	board.playStone(move, turn);
 
-		LineView	LV(board, LineView::Direction::MINUS_DIAG, move);
-		LV.debug();
+	// 	LineView	LV(board, LineView::Direction::MINUS_DIAG, move);
+	// 	LV.debug();
 
-		if (turn == PlayerID::P1)	turn = PlayerID::P2;
-		else						turn = PlayerID::P1;
-	}
+	// 	if (turn == PlayerID::P1)	turn = PlayerID::P2;
+	// 	else						turn = PlayerID::P1;
+	// }
+	board._checkEntierBoardByOnlyDoingDiag();
+	_render.renderGame(board);
+	SDL_Delay(30 * 1000U);
 	// _render.renderGame(board); // temporary
 
 	return (board.getWinner());
