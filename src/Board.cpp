@@ -56,7 +56,7 @@ bool	Board::_checkWinBy5(const Position pos, const PlayerID player) {
 	}
 
 	if (_positionHas5(pos) == toStone(player)) {
-		if (true) {// One of the made 5 cannot be taken
+		if (true) {// One of the made 5 cannot be taken // TODO
 			// if len bigger than 5 then check only middle
 			return (_setWinner(player));
 		} else { // Save position for next turn
@@ -96,15 +96,13 @@ void	Board::_capture2(const Position pos, const PlayerID player) {
 		auto nView = LV.getViewNegative();
 		auto pView = LV.getViewPositive();
 
-		// std::cout << "In _capture2 " << LV<< std::endl;
-		
 		if (nView.makesCapture2(player)) {
 			const auto	stepDirN = LV.getStepDir(LineView::ViewDirection::NEGATIVE);
 
 			_placeAt(pos.x + stepDirN.x, pos.y + stepDirN.y, Stone::NONE);			
 			_placeAt(pos.x + 2 * stepDirN.x, pos.y + 2 * stepDirN.y, Stone::NONE);
 			++_nCapture[toInt(player)];
-			std::cout << nView << std::endl;
+			// std::cout << nView << std::endl;
 		}
 		if (pView.makesCapture2(player)) {
 			const auto	stepDirP = LV.getStepDir(LineView::ViewDirection::POSITIVE);
@@ -112,14 +110,14 @@ void	Board::_capture2(const Position pos, const PlayerID player) {
 			_placeAt(pos.x + stepDirP.x, pos.y + stepDirP.y, Stone::NONE);			
 			_placeAt(pos.x + 2 * stepDirP.x, pos.y + 2 * stepDirP.y, Stone::NONE);			
 			++_nCapture[toInt(player)];
-			std::cout << pView << std::endl;
+			// std::cout << pView << std::endl;
 		}
 	}
 	(void)player;
 }
 
 bool	Board::_makesFree3(const Move move, const PlayerID _player) const {
-	Stone	player = toStone(_player);
+	Stone	player = toStone(_player);	// TODO
 	// Check stuff
 	(void)move;
 	(void)player;
