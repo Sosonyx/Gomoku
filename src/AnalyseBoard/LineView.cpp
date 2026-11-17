@@ -27,7 +27,7 @@ constexpr Board::size_t	LineView::_getIPos(const Position &pos, const Direction 
 }
 
 void	LineView::_setGroupLen(void) {
-	const DirVector	&vecInDir = dirVec[static_cast<uint16_t>(_dir)];
+	const StepDir	&vecInDir = dirVec[static_cast<uint16_t>(ViewDirection::POSITIVE)][static_cast<uint16_t>(_dir)];
 
 	const Board::size_t	lenPositive = _lineLen - 1 - _iPos;
 	Board::size_t		groupLenPositive = 0;
@@ -73,7 +73,7 @@ LineView::LineView(const Board &board, Direction dir, const Move move, PlayerID 
 }
 
 void	LineView::_makeView(const ViewDirection viewDir) {
-	SideView<Board::BoardSize>	*view = nullptr;
+	SideView	*view = nullptr;
 	if (viewDir == ViewDirection::NEGATIVE) {	// If already created
 		if (_negativeCreated)	return ;
 		_negativeCreated = true;
@@ -87,9 +87,9 @@ void	LineView::_makeView(const ViewDirection viewDir) {
 	const size_t	nStep = (viewDir == ViewDirection::NEGATIVE) ? _iPos : _lineLen - _iPos - 1;
 	if (!nStep)	return ;	// If at endOfLine
 
-	const ssize_t	step = (viewDir == ViewDirection::NEGATIVE) ? -1 : 1;
-	const auto		&vecDirX = dirVec[static_cast<uint16_t>(_dir)].x * step;
-	const auto		&vecDirY = dirVec[static_cast<uint16_t>(_dir)].y * step;
+	// const ssize_t	step = (viewDir == ViewDirection::NEGATIVE) ? -1 : 1;
+	const auto		&vecDirX = dirVec[static_cast<uint16_t>(viewDir)][static_cast<uint16_t>(_dir)].x;
+	const auto		&vecDirY = dirVec[static_cast<uint16_t>(viewDir)][static_cast<uint16_t>(_dir)].y;
 	
 	
 	size_t	groupLen = 1;
@@ -123,22 +123,38 @@ bool LineView::positiveMakesCapture2(void){
 	return (false);
 }
 
-const SideView<Board::BoardSize>	&LineView::getViewNegative(void) {
+const SideView	&LineView::getViewNegative(void) {
 	if (!_negativeCreated)	_makeView(ViewDirection::NEGATIVE);
 	return (_negativeView);
 }
 
-const SideView<Board::BoardSize>	&LineView::getViewPositive(void) {
+const SideView	&LineView::getViewPositive(void) {
 	if (!_positiveCreated)	_makeView(ViewDirection::POSITIVE);
 	return (_positiveView);
 }
 
-void	LineView::debug(void) const {
-	const size_t	lenPositive = _lineLen - 1 - _iPos;
-	const size_t	lenNegative = _iPos;
+std::ostream	&operator<<(std::ostream &os, LineView &lineView) {
+	static const char	*directionToStrClr[LineView::nDirection] {
+		[static_cast<int>(LineView::Direction::HORIZONTAL)]	= "HORIZONTAL",
+		[static_cast<int>(LineView::Direction::VERTICAL)]	= "VERTICAL",
+		[static_cast<int>(LineView::Direction::PLUS_DIAG)]	= "PLUS_DIAG",
+		[static_cast<int>(LineView::Direction::MINUS_DIAG)]	= "MINUS_DIAG",
+	};
+	static const char	*stoneToStrClr[3] {
+		[static_cast<int>(Stone::P1)] = "\e[41m",
+		[static_cast<int>(Stone::P2)] = "\e[44m",
+		[static_cast<int>(Stone::NONE)] = "\e[100m",
+	};
+	const auto	nView = lineView.getViewNegative();
+	const auto	pView = lineView.getViewPositive();
+	const char	*clrID = stoneToStrClr[static_cast<int>(lineView._stoneAtPos)];
 
-	std::cout << "Line Len: " 		<< static_cast<uint16_t>(_lineLen) << std::endl;
-	std::cout << "Negative Len: "	<< static_cast<uint16_t>(lenNegative) << std::endl;
-	std::cout << "Positive Len: "	<< static_cast<uint16_t>(lenPositive) << std::endl;
-	std::cout << "Group Len: " 		<< static_cast<uint16_t>(_groupLen) << std::endl << std::endl;
+	os << directionToStrClr[static_cast<int>(lineView._dir)] << " ";
+	os << nView;
+	os << clrID << " " "\e[0m";
+	os << pView;
+	os << " (" << static_cast<int>(lineView._iPos) <<" | 1 | " << static_cast<int>(lineView._lineLen - lineView._iPos - 1) << ")";
+	os << std::endl;
+	return (os);
 }
+

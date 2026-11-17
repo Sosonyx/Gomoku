@@ -6,7 +6,7 @@
 #include "Board.hpp"
 #include "SideView.hpp"
 
-#include <iostream>	//tmp
+#include <iostream>
 
 
 class LineView {
@@ -27,21 +27,30 @@ class LineView {
 			MINUS_DIAG	// Line equation is: y = -x	// Goes left-down to right-up because of screen coordinate system
 		};
 	
-		static constexpr uint8_t	nDirection = 4;
-		static constexpr Direction	uint16ToDirection[nDirection] = {	// PLUS_DIAG is y = x, MINUS_DIAG is y = -x
-				Direction::HORIZONTAL,	Direction::VERTICAL,
-				Direction::PLUS_DIAG,	Direction::MINUS_DIAG,
-		};
-		
-		private:
-	
-		using DirVector = struct {Board::ssize_t x; Board::ssize_t y;};
+		static constexpr uint8_t	nViewDirection = 2;
 
-		static constexpr DirVector	dirVec[nDirection] = {
-			[static_cast<uint16_t>(Direction::HORIZONTAL)]	= {.x = 1, .y = 0},
-			[static_cast<uint16_t>(Direction::VERTICAL)]	= {.x = 0, .y = 1},
-			[static_cast<uint16_t>(Direction::PLUS_DIAG)]	= {.x = 1, .y = 1},
-			[static_cast<uint16_t>(Direction::MINUS_DIAG)]	= {.x = 1, .y = -1},
+		static constexpr uint8_t	nDirection = 4;
+		// static constexpr Direction	uint16ToDirection[nDirection] = {	// PLUS_DIAG is y = x, MINUS_DIAG is y = -x
+		// 		Direction::HORIZONTAL,	Direction::VERTICAL,
+		// 		Direction::PLUS_DIAG,	Direction::MINUS_DIAG,
+		// };
+		
+		using StepDir = struct {Board::ssize_t x; Board::ssize_t y;};
+	
+	private:
+		static constexpr StepDir	dirVec[nViewDirection][nDirection] = {
+			[static_cast<uint16_t>(ViewDirection::POSITIVE)] = {
+				[static_cast<uint16_t>(Direction::HORIZONTAL)]	= {.x = 1, .y = 0},
+				[static_cast<uint16_t>(Direction::VERTICAL)]	= {.x = 0, .y = 1},
+				[static_cast<uint16_t>(Direction::PLUS_DIAG)]	= {.x = 1, .y = 1},
+				[static_cast<uint16_t>(Direction::MINUS_DIAG)]	= {.x = 1, .y = -1},
+			},
+			[static_cast<uint16_t>(ViewDirection::NEGATIVE)] = {
+				[static_cast<uint16_t>(Direction::HORIZONTAL)]	= {.x = -1, .y = 0},
+				[static_cast<uint16_t>(Direction::VERTICAL)]	= {.x = 0, .y = -1},
+				[static_cast<uint16_t>(Direction::PLUS_DIAG)]	= {.x = -1, .y = -1},
+				[static_cast<uint16_t>(Direction::MINUS_DIAG)]	= {.x = -1, .y = 1},
+			}
 		};
 
 	private:
@@ -56,11 +65,11 @@ class LineView {
 		
 		size_t	_groupLen = 0;
 
-		bool	_negativeCreated = false;
-		SideView<Board::BoardSize>	_negativeView;
+		bool		_negativeCreated = false;
+		SideView	_negativeView;
 		
-		bool	_positiveCreated = false;
-		SideView<Board::BoardSize>	_positiveView;
+		bool		_positiveCreated = false;
+		SideView	_positiveView;
 
 	private:
 		static constexpr size_t	_getLineLen(const Position &pos, const Direction dir);
@@ -84,11 +93,23 @@ class LineView {
 			return (_groupLen);
 		}
 
-		const SideView<Board::BoardSize>	&getViewNegative(void);
-		const SideView<Board::BoardSize>	&getViewPositive(void);	// View to the right / bot in the vertical case
+		const SideView	&getViewNegative(void);
+		const SideView	&getViewPositive(void);	// View to the right / bot in the vertical case
 
 		bool negativeMakesCapture2(void);
 		bool positiveMakesCapture2(void);
 		
-		void	debug(void) const;
+		// Return a vector for the steping, based on our dir and the given ViewDir
+		inline const StepDir	&getStepDir(const ViewDirection viewDir) const {
+			return (dirVec[static_cast<uint16_t>(viewDir)][static_cast<uint16_t>(_dir)]);
+		}
+		
+		// Return a vector for the steping
+		inline static const StepDir	&getStepDir(const Direction dir, const ViewDirection viewDir) {
+			return (dirVec[static_cast<uint16_t>(viewDir)][static_cast<uint16_t>(dir)]);
+		}
+
+		friend std::ostream	&operator<<(std::ostream &os, LineView &lineView);
 };
+
+

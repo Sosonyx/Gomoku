@@ -82,6 +82,19 @@ class Board
 			return (_setWinner(toStone(player)));
 		}
 
+		// TODO: Maybe have every single view in a member, update them so you dont have to ask
+		// Todo: Look at the type system and if it could help me
+		void	_updateInsideAnalyse(const Position pos);
+
+		inline void	_placeAt(const Position pos, const Stone stone) {
+			_board[pos.x][pos.y] = stone;
+			_updateInsideAnalyse(pos);
+		}
+		inline void	_placeAt(const size_t x, const size_t y, const Stone stone) {
+			_board[x][y] = stone;
+			_updateInsideAnalyse(Position(x, y));
+		}
+
 	public:
 		Board(const Settings &settings);
 		Board(const Board &oldBoard, const Move &playedMove, const PlayerID player);

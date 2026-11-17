@@ -10,39 +10,22 @@
 
 
 struct StoneGroup {
-	Board::size_t	len;
-	Stone			stone;
+	Board::size_t	len;	// Number of stone
+	Stone			stone;	// Stone type
 
 	StoneGroup(void)
 		:	len(0), stone(Stone::NONE)	{}
-	StoneGroup(uint16_t _len, Stone _stone)
+	StoneGroup(const Board::size_t _len, const Stone _stone)
 		:	len(_len), stone(_stone)	{}
-	
-	inline bool	operator==(const StoneGroup &other) {
-		return (stone == other.stone && len == other.len);
-	}
-	inline bool	operator>=(const StoneGroup &other) {
-		return (stone == other.stone && len >= other.len);
-	}
-	inline bool	operator<=(const StoneGroup &other) {
-		return (stone == other.stone && len <= other.len);
-	}
-	inline bool	operator>(const StoneGroup &other) {
-		return (stone == other.stone && len > other.len);
-	}
-	inline bool	operator<(const StoneGroup &other) {
-		return (stone == other.stone && len < other.len);
-	}
 };
 
 std::ostream	&operator<<(std::ostream &os, const StoneGroup &stoneGroup);
 
-template <Board::size_t N = Board::BoardSize>
 class	SideView {
 	public:
 		using	size_t = Board::size_t;
 	private:
-		StoneGroup	_arr[N];
+		StoneGroup	_arr[Board::BoardSize];
 		size_t	_size = 0;
 		size_t	_len = 0;
 
@@ -54,7 +37,7 @@ class	SideView {
 		size_t	len(void)	const	{	return (_len);	};	// Returns distance to the end of the board
 
 		inline void	push(const size_t len, const Stone stone) {
-			if (_size >= N)
+			if (_size >= Board::BoardSize)
 				throw(std::runtime_error("StoneGroup.push(): _size == N"));
 			_arr[_size].stone = stone;
 			_arr[_size].len = len;
@@ -62,7 +45,7 @@ class	SideView {
 			_size++;
 		};
 		inline void	push(const StoneGroup &stoneGroup) {
-			if (_size >= N)
+			if (_size >= Board::BoardSize)
 				throw(std::runtime_error("StoneGroup.push(): _size == N"));
 			_arr[_size] = stoneGroup;
 			_len += stoneGroup.len;
@@ -86,8 +69,15 @@ class	SideView {
 			return (_arr[n]);
 		}
 
-		bool	makesCapture2(void)	const;
+		bool	makesCapture2(const PlayerID player) const;
 };
 
-template <SideView<>::size_t N = Board::BoardSize>
-std::ostream	&operator<<(std::ostream &os, const SideView<N> &sideView);
+std::ostream	&operator<<(std::ostream &os, const SideView &sideView);
+// inline std::ostream	&operator<<(std::ostream &os, const SideView &sideView) {
+// 	os << '[';
+// 	for (auto i = 0; i < sideView.size(); ++i)	
+// 		os << sideView[i];
+// 	os << ']';
+// 	return (os);
+// }
+
