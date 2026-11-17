@@ -9,7 +9,7 @@ namespace
 	constexpr int WindowHeight = 1000;
 
 
-	constexpr int GridSize = BoardSize + 2;
+	constexpr int GridSize = Board::Board::BoardSize + 2;
 	constexpr int GridVerticalMargin = 30;
 	constexpr int GridHorizontalMargin = 60;
 	constexpr int GridHeight = WindowHeight - 2 * GridVerticalMargin;
@@ -122,8 +122,8 @@ void Render::renderStone(int x, int y, Stone stone, bool preview)
 
 void Render::renderStones(Board &board)
 {
-    for (int x = 0; x < BoardSize; x++) {
-        for (int y = 0; y < BoardSize; y++) {
+    for (int x = 0; x < Board::BoardSize; x++) {
+        for (int y = 0; y < Board::BoardSize; y++) {
             Stone stone = board.getStoneAt(x, y);
             if (stone != Stone::NONE) {
                 renderStone(x, y, stone);

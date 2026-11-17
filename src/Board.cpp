@@ -1,5 +1,7 @@
 #include "Board.hpp"
 #include "Game.hpp"
+#include "LineView.hpp"
+
 #include <stdexcept>
 
 Board::Board(const Settings &settings)
@@ -8,7 +10,7 @@ Board::Board(const Settings &settings)
 	std::memset(_board, static_cast<uint8_t>(Stone::NONE), sizeof(_board));
 }
 
-Board::Board(const Board &oldBoard, const Move &playedMove, PlayerID player)
+Board::Board(const Board &oldBoard, const Move &playedMove, const PlayerID player)
 :	_settings(oldBoard._settings)
 {
 	_nCapture[0] = oldBoard._nCapture[0];
@@ -20,58 +22,89 @@ Board::Board(const Board &oldBoard, const Move &playedMove, PlayerID player)
 	playStone(playedMove, player);	// Update board
 }
 
-bool	Board::_checkWinBy5(const PlayerID player) {
-	// if can win
-	//		if cannot be taken -> WIN
-	//		else	FLAG
-	// At end of other player turn, if flag, check if i can still win <- check for his loss Before we check for his win
-	// 
-	(void) player;
-	return (false);
+Stone	Board::_positionHas5(const Position pos) const {
+	if (getStoneAt(pos) == Stone::NONE)
+		return (Stone::NONE);
+
+	for (uint16_t i = 0; i < LineView::nDirection; ++i) {
+		LineView	LV(*this, static_cast<LineView::Direction>(i), pos);
+		if (LV.getGroupLen() >= 5)
+			return (getStoneAt(pos));
+	}
+	return (Stone::NONE);
 }
 
-void	Board::_iterOnDiag(const uint16_t dX, const uint16_t dY) {
-	const uint16_t	lenLine = (dX < (BoardSize / 2)) ? dX : BoardSize - dX - 1;
-	for (uint16_t i = 1; i <= lenLine; ++i) {
-		playStone(Position(dX + i, dY - i), PlayerID::P1);
-		playStone(Position(dX - i, dY + i), PlayerID::P1);
+
+void	Board::_iterOnWinPosition(void) {
+	constexpr uint16_t LenWin = 5;
+	static constexpr uint16_t	IndexToCheckByCol[LenWin] = {4, 1, 3, 0, 2};
+
+	for (uint16_t x = 0; x < BoardSize; ++x) {
+		for (uint16_t y = IndexToCheckByCol[x % LenWin]; y < BoardSize; y += LenWin) {
+			playStone(Position(x, y), PlayerID::P1);
+		}
 	}
-	playStone(Position(dX, dY), PlayerID::P1);
+	
 }
 
-void	Board::_checkEntierBoardByOnlyDoingDiag(void) {
-	for (uint16_t i = 2; i < BoardSize; i += 3) {
-		_iterOnDiag(i, i);
+bool	Board::_checkWinBy5(const Position pos, const PlayerID player) {
+	if (_lastMoveWinner != Stone::NONE) {	// If last turn was winning for the other
+		Stone checkAgain = _positionHas5(_lastMoveWinningPos);
+		if (_lastMoveWinner == checkAgain) {	// Check again the winner position
+			return (_setWinner(_lastMoveWinner));
+		}
+		_lastMoveWinner = Stone::NONE;
 	}
-}
 
-bool	Board::_checkWinner(const Move move, PlayerID player) {
-	// Todo: add can win by capture to settings
-	// if can win by capture
-	if (_nCapture[toInt(PlayerID::P1)] >= nCaptureToWin) {
-		_winner = Stone::P1;
-		return (_done = true);
-	}
-	if (_nCapture[toInt(PlayerID::P2)] >= nCaptureToWin) {
-		_winner = Stone::P2;
-		return (_done = true);
-	}
-	if (false)  {// Check if we did 5 in a row
-		(void)move;
-		_winner = player == PlayerID::P1 ? Stone::P1 : Stone::P2;
-		return (_done = true);
+	if (_positionHas5(pos) == toStone(player)) {
+		if (true)  {// One of the made 5 cannot be taken
+			return (_setWinner(player));
+		} else { // Save position for next turn
+			_lastMoveWinner = toStone(player);
+			_lastMoveWinningPos = pos;
+		}
 	}
 	return (_done);
 }
 
-bool	Board::_makesFree3(const Move move, Stone player) const {
+bool	Board::_checkWinByCapture(void) {
+	{		// If can win by capture
+		if (_nCapture[toInt(PlayerID::P1)] >= nCaptureToWin)	return (_setWinner(PlayerID::P1));
+		if (_nCapture[toInt(PlayerID::P2)] >= nCaptureToWin)	return (_setWinner(PlayerID::P2));
+	}
+	return (_done);
+}
+
+
+bool	Board::_checkWinner(const Position pos, const PlayerID player) {
+	// Todo: add can win by capture to settings
+	// if can win by capture
+	do {
+		if (_checkWinBy5(pos, player))
+			break ;
+		if (_checkWinByCapture())
+			break ;
+	} while(0);
+	return (_done);
+}
+
+void	Board::_capture2(const Position pos, const Stone player) {
+	// Loop over all around move
+	//		if dir has capture
+	// 			Incrise _nCapture[player]
+	// 			decrease nStone[otherPlayer]
+	(void)pos;
+	(void)player;
+}
+
+bool	Board::_makesFree3(const Move move, const Stone player) const {
 	// Check stuff
 	(void)move;
 	(void)player;
 	return (false);
 }
 
-bool	Board::isMoveLegal(const Move move, PlayerID player) const {
+bool	Board::isMoveLegal(const Move move, const PlayerID player) const {
 	if (move.x >= BoardSize || move.y >= BoardSize)
 		return (false);
 	if (_board[move.x][move.y] != Stone::NONE)
@@ -81,14 +114,16 @@ bool	Board::isMoveLegal(const Move move, PlayerID player) const {
 	return (true);
 }
 
-void	Board::_capture2(const Move move, Stone player) {
-	// Loop over all around move
-	//		if dir has capture
-	// 			Incrise _nCapture[player]
-	// 			decrease nStone[otherPlayer]
-	(void)move;
+bool	Board::hasLegalMove(PlayerID player)	const {
+	// Iter on nonStone pos
+	// if no free3
+	// return true
 	(void)player;
+	return (false);
 }
+
+
+
 
 void	Board::playStone(const Move move, PlayerID player) {
 	if (!isMoveLegal(move, player))
@@ -110,5 +145,16 @@ bool	Board::done(void)	const {
 Stone	Board::getWinner(void)	const {
 	if (_done == false)
 		throw (std::runtime_error("GetWinner call when Board is not done"));
+	switch (_winner) {
+		case (Stone::NONE):
+			std::cout << " -- Tie -- " << std::endl;
+			break ;
+		case (Stone::P1):
+			std::cout << " -- P1 -- " << std::endl;
+			break ;
+		case (Stone::P2):
+			std::cout << " -- P2 -- " << std::endl;
+			break ;
+	}
 	return (_winner);
 }

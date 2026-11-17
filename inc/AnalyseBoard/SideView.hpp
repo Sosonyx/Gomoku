@@ -11,7 +11,7 @@ struct StoneGroup {
 	const Stone	stone;
 
 	StoneGroup(void)
-		:	len(BoardSize), stone(Stone::NONE)	{}
+		:	len(Board::BoardSize), stone(Stone::NONE)	{}
 	StoneGroup(uint16_t _len, Stone _stone)
 		:	len(_len), stone(_stone)	{}
 	
@@ -32,7 +32,7 @@ struct StoneGroup {
 	}
 };
 
-template <std::uint16_t N = BoardSize>
+template <std::uint16_t N = Board::BoardSize>
 class	SideView {
 	private:
 		StoneGroup	_arr[N];

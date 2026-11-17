@@ -1,12 +1,5 @@
 #include "LineView.hpp"
 
-LineView::DirVector	LineView::dirVec[nDirection] = {
-	[static_cast<uint16_t>(Direction::HORIZONTAL)]	= {.x = 1, .y = 0},
-	[static_cast<uint16_t>(Direction::VERTICAL)]	= {.x = 0, .y = 1},
-	[static_cast<uint16_t>(Direction::PLUS_DIAG)]	= {.x = 1, .y = 1},
-	[static_cast<uint16_t>(Direction::MINUS_DIAG)]	= {.x = 1, .y = -1},
-};
-
 
 constexpr uint16_t	LineView::_getLineLen(const Position &pos, const Direction dir) {
 	if (dir == Direction::HORIZONTAL || dir == Direction::VERTICAL)

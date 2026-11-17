@@ -22,16 +22,8 @@ Stone	Game::_startGame() {
 		}
 		board.playStone(move, turn);
 
-		LineView	LV(board, LineView::Direction::MINUS_DIAG, move);
-		LV.debug();
-
 		if (turn == PlayerID::P1)	turn = PlayerID::P2;
 		else						turn = PlayerID::P1;
-	}
-	{
-		// board._checkEntierBoardByOnlyDoingDiag();
-		// _render.renderGame(board);
-		// SDL_Delay(30 * 1000U);
 	}
 	// _render.renderGame(board); // temporary
 
