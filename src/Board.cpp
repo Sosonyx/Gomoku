@@ -88,7 +88,9 @@ bool	Board::_checkWinner(const Position pos, const PlayerID player) {
 	return (_done);
 }
 
-void	Board::_capture2(const Position pos, const Stone player) {
+void	Board::_capture2(const Position pos, const PlayerID _player) {
+	Stone	player = toStone(_player);
+
 	// Loop over all around move
 	//		if dir has capture
 	// 			Incrise _nCapture[player]
@@ -97,7 +99,8 @@ void	Board::_capture2(const Position pos, const Stone player) {
 	(void)player;
 }
 
-bool	Board::_makesFree3(const Move move, const Stone player) const {
+bool	Board::_makesFree3(const Move move, const PlayerID _player) const {
+	Stone	player = toStone(_player);
 	// Check stuff
 	(void)move;
 	(void)player;
@@ -109,16 +112,20 @@ bool	Board::isMoveLegal(const Move move, const PlayerID player) const {
 		return (false);
 	if (_board[move.x][move.y] != Stone::NONE)
 		return (false);
-	if (_settings.free3 && _makesFree3(move, toStone(player)))
+	if (_settings.free3 && _makesFree3(move, player))
 		return (false);
 	return (true);
 }
 
-bool	Board::hasLegalMove(PlayerID player)	const {
-	// Iter on nonStone pos
-	// if no free3
-	// return true
-	(void)player;
+bool	Board::hasLegalMove(const PlayerID player)	const {
+	for (uint16_t x = 0; x < BoardSize; ++x) {
+		for (uint16_t y = 0; y < BoardSize; ++y) {
+			if (getStoneAt(x, y) == Stone::NONE) {
+				if (!_makesFree3(Position(x, y), player))
+					return (true);
+			}
+		}
+	}
 	return (false);
 }
 
@@ -133,7 +140,7 @@ void	Board::playStone(const Move move, PlayerID player) {
 	++_nStone[toInt(player)];
 
 	if (_settings.capture2)
-		_capture2(move, toStone(player));
+		_capture2(move, player);
 	
 	_checkWinner(move, player);
 }

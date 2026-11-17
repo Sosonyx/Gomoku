@@ -52,8 +52,8 @@ class Board
 
 	private:
 
-		bool	_makesFree3(const Move move, Stone player)	const;
-		void	_capture2(const Move move, Stone player);
+		bool	_makesFree3(const Move move, const PlayerID _player)	const;
+		void	_capture2(const Move move, const PlayerID _player);
 	
 		
 		Stone	_positionHas5(const Position pos) const;
