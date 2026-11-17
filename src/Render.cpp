@@ -160,12 +160,12 @@ bool Render::isStartButton(int x, int y) const
 
 Move Render::pixelToGrid(int x, int y) const
 {
-    uint16_t gridX = (x - GridHorizontalMargin + GridSpacing / 2)
+    Board::size_t gridX = (x - GridHorizontalMargin + GridSpacing / 2)
         / GridSpacing - 1;
-    uint16_t gridY = (y - GridVerticalMargin + GridSpacing / 2)
+    Board::size_t gridY = (y - GridVerticalMargin + GridSpacing / 2)
         / GridSpacing - 1;
 
-    return Move{(gridX),(gridY)};
+    return Move{gridX, gridY};
 }
 
 Move Render::detectPlayerMove(Board &board, PlayerID player)
@@ -185,13 +185,13 @@ Move Render::detectPlayerMove(Board &board, PlayerID player)
         // }
         if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
             Move move = pixelToGrid(event.button.x, event.button.y);
-            if (move.x != static_cast<uint16_t>(-1)
+            if (move.x != static_cast< Board::size_t>(-1)
                 && board.isMoveLegal(move, player)) {
                 return move;
             }
         }
     }
-    return Move{static_cast<uint16_t>(-1), static_cast<uint16_t>(-1)}; // Invalid move
+    return Move{static_cast< Board::size_t>(-1), static_cast< Board::size_t>(-1)}; // Invalid move
 }
 
 void Render::renderGame(Board &board)

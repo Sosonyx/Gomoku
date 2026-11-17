@@ -4,33 +4,40 @@
 #include <cstring>
 #include <exception>
 #include <stdexcept>
+#include <iostream>
 
 #include "Enums.hpp"
 
 struct Settings;
 
+namespace BoardConfig {
+	using ssize_t	= int8_t;
+	using size_t	= uint8_t;
+	inline constexpr size_t nCaptureToWin	= 5u;
+	inline constexpr size_t MinLenToWin		= 5u;
+	inline constexpr size_t BoardSize		= 19u;
+}
 
 struct Move
 {
-	uint16_t x = 0;
-	uint16_t y = 0;
-	inline Move(void): x(0), y(0) {};
-	inline Move(uint16_t _x, uint16_t _y) {
-		// if (x >= BoardSize || y >= BoardSize)
-		// 	throw (std::runtime_error("Move(x, y) creation is oob"));
-		x = _x;
-		y = _y;
-	}
+	using	size_t = BoardConfig::size_t;
+	size_t x = 0;
+	size_t y = 0;
+	inline Move(void):	x(0), y(0) {};
+	inline Move(const size_t _x,const size_t _y):	x(_x), y(_y)  {}
 };
-
 using Position = Move;
-
 
 class Board
 {
 	public:
-		static inline constexpr uint16_t	nCaptureToWin = 5u;
-		static inline constexpr uint16_t	BoardSize = 19u;
+		using	ssize_t	= BoardConfig::ssize_t;
+		using	size_t	= BoardConfig::size_t;
+
+		static inline constexpr size_t	nCaptureToWin	= BoardConfig::nCaptureToWin;
+		static inline constexpr size_t	BoardSize		= BoardConfig::BoardSize;
+		static inline constexpr size_t	MinLenToWin		= BoardConfig::MinLenToWin;
+
 
 		template<typename T>
 		using BoardArr = T[BoardSize][BoardSize];
@@ -38,8 +45,8 @@ class Board
 	private:
 		BoardArr<Stone> 	_board;
 
-		uint16_t	_nCapture[2] = {0, 0};
-		uint16_t	_nStone[2]  = {0, 0};
+		size_t	_nCapture[2] = {0, 0};
+		size_t	_nStone[2]  = {0, 0};
 
 		// Did we have a winner last move
 		Stone		_lastMoveWinner = Stone::NONE;
@@ -57,7 +64,7 @@ class Board
 	
 		
 		Stone	_positionHas5(const Position pos) const;
-		Stone	_positionHas5(const uint16_t x, const uint16_t y) const
+		Stone	_positionHas5(const size_t x, const size_t y) const
 		{	return (_positionHas5(Position(x, y)));	};
 		
 		void	_iterOnWinPosition(void);
@@ -85,7 +92,7 @@ class Board
 		void	playStone(const Move move, const PlayerID player);
 
 		
-		inline Stone	getStoneAt(const uint16_t x, const uint16_t y) const{
+		inline Stone	getStoneAt(const size_t x, const size_t y) const{
 			if (x >= BoardSize || y >= BoardSize)
 				throw (std::runtime_error("getStone call is OOB"));
 			return (_board[x][y]);
@@ -96,9 +103,22 @@ class Board
 			return (_board[pos.x][pos.y]);
 		}
 
-		// Stone	getStoneAt(uint16_t x, uint16_t y)	const;
+		inline bool	done(void)	const {	return (_done);	}
 
-		bool	done(void)	const;
-		Stone	getWinner(void)	const;
-
+		inline Stone	getWinner(void)	const {
+			if (_done == false)
+				throw (std::runtime_error("GetWinner call when Board is not done"));
+			switch (_winner) {
+				case (Stone::NONE):
+					std::cout << " -- Tie -- " << std::endl;
+					break ;
+				case (Stone::P1):
+					std::cout << " -- P1 -- " << std::endl;
+					break ;
+				case (Stone::P2):
+					std::cout << " -- P2 -- " << std::endl;
+					break ;
+			}
+			return (_winner);
+		}
 };

@@ -26,9 +26,9 @@ Stone	Board::_positionHas5(const Position pos) const {
 	if (getStoneAt(pos) == Stone::NONE)
 		return (Stone::NONE);
 
-	for (uint16_t i = 0; i < LineView::nDirection; ++i) {
+	for (auto i = 0; i < LineView::nDirection; ++i) {
 		LineView	LV(*this, static_cast<LineView::Direction>(i), pos);
-		if (LV.getGroupLen() >= 5)
+		if (LV.getGroupLen() >= Board::MinLenToWin)
 			return (getStoneAt(pos));
 	}
 	return (Stone::NONE);
@@ -36,11 +36,10 @@ Stone	Board::_positionHas5(const Position pos) const {
 
 
 void	Board::_iterOnWinPosition(void) {
-	constexpr uint16_t LenWin = 5;
-	static constexpr uint16_t	IndexToCheckByCol[LenWin] = {4, 1, 3, 0, 2};
+	static constexpr size_t	IndexToCheckByCol[MinLenToWin] = {4, 1, 3, 0, 2};
 
-	for (uint16_t x = 0; x < BoardSize; ++x) {
-		for (uint16_t y = IndexToCheckByCol[x % LenWin]; y < BoardSize; y += LenWin) {
+	for (auto x = 0; x < BoardSize; ++x) {
+		for (auto y = IndexToCheckByCol[x % Board::MinLenToWin]; y < BoardSize; y += Board::MinLenToWin) {
 			playStone(Position(x, y), PlayerID::P1);
 		}
 	}
@@ -58,6 +57,7 @@ bool	Board::_checkWinBy5(const Position pos, const PlayerID player) {
 
 	if (_positionHas5(pos) == toStone(player)) {
 		if (true)  {// One of the made 5 cannot be taken
+			// if len bigger than 5 then check only middle
 			return (_setWinner(player));
 		} else { // Save position for next turn
 			_lastMoveWinner = toStone(player);
@@ -118,21 +118,16 @@ bool	Board::isMoveLegal(const Move move, const PlayerID player) const {
 }
 
 bool	Board::hasLegalMove(const PlayerID player)	const {
-	for (uint16_t x = 0; x < BoardSize; ++x) {
-		for (uint16_t y = 0; y < BoardSize; ++y) {
-			if (getStoneAt(x, y) == Stone::NONE) {
-				if (!_makesFree3(Position(x, y), player))
-					return (true);
-			}
+	for (auto x = 0; x < BoardSize; ++x) {
+		for (auto y = 0; y < BoardSize; ++y) {
+			if (isMoveLegal(Position(x, y), player))
+				return (true);
 		}
 	}
 	return (false);
 }
 
-
-
-
-void	Board::playStone(const Move move, PlayerID player) {
+void	Board::playStone(const Move move, const PlayerID player) {
 	if (!isMoveLegal(move, player))
 		throw ("Stone played on board is not legal");
 
@@ -143,25 +138,4 @@ void	Board::playStone(const Move move, PlayerID player) {
 		_capture2(move, player);
 	
 	_checkWinner(move, player);
-}
-
-bool	Board::done(void)	const {
-	return (_done);
-}
-
-Stone	Board::getWinner(void)	const {
-	if (_done == false)
-		throw (std::runtime_error("GetWinner call when Board is not done"));
-	switch (_winner) {
-		case (Stone::NONE):
-			std::cout << " -- Tie -- " << std::endl;
-			break ;
-		case (Stone::P1):
-			std::cout << " -- P1 -- " << std::endl;
-			break ;
-		case (Stone::P2):
-			std::cout << " -- P2 -- " << std::endl;
-			break ;
-	}
-	return (_winner);
 }
