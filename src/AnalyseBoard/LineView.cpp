@@ -95,6 +95,54 @@ const SideView	&LineView::getViewPositive(void) const {
 	return (_positiveView);
 }
 
+bool	LineView::_posCanBeCaptured(const SideView &nView, const SideView &pView, Stone stoneAt) {
+	if (stoneAt == Stone::NONE)
+		return (false);
+	if (pView.len() < 1 || nView.len() < 2)	// If not enought len
+		return (false);
+	if (!nView[0].is(1, stoneAt))	// If next to us isnt same stone as us
+		return (false);
+	// nView[1] isnt of type stoneAt or it would be with nView[0]
+	// We must check if pView[0] isnt same as us (if it is, we have 3 / more aligned and cannot be taken)
+	// pView[0].stone and nView[1].stone are not of stoneAt type
+	// if they are different then one is NONE and the other is opponentStone
+	return (pView[0].stone != stoneAt && nView[1].stone != pView[0].stone);
+}
+
+bool	LineView::canBeCaptured(void) const {
+	if (_iPos == 0 || _iPos == _lineLen - 1)	// If on extremity
+		return (false);
+	
+	return (_posCanBeCaptured(_negativeView, _positiveView, _stoneAtPos)
+		|| _posCanBeCaptured(_positiveView, _negativeView, _stoneAtPos));	
+}
+
+
+bool	LineView::winCanBeCaptured(void) const {
+	if (_groupLen < Board::MinLenToWin)
+		return (false);
+
+	const size_t	extraLen = _groupLen - Board::MinLenToWin;	// Dandling bits on the side (if there is 6 aligned, we can just check the middle 4)
+	const size_t	lenToScan = _groupLen - 2 * extraLen;		// 5 -> 5, 6 -> 4 ... The lenght to check
+	const ssize_t	iStart = -((!_negativeView.size() || _negativeView[0].stone != _stoneAtPos) ? 0 : _negativeView[0].len) + extraLen;
+		
+	// std::cout << "winCanBeCaptured: " << static_cast<int>(extraLen) << " " << static_cast<int>(lenToScan) << " " << static_cast<int>(iStart) << " " << static_cast<int>(_iPos) << std::endl;
+	const StepDir	&vDir = getStepDir();
+	for (auto iStep = iStart; iStep < lenToScan; ++iStep) {
+		for (uint8_t iDir = 0; iDir < LineView::nDirection; ++iDir) {
+			if (static_cast<uint8_t>(_dir) == iDir)
+				continue ;
+
+			const Position newPos(_pos.x + vDir.x * iStep, _pos.y + vDir.y * iStep);
+			const LineView	LV(_board, static_cast<LineView::Direction>(iDir), newPos);
+			
+			if (LV.canBeCaptured())
+				return (true);
+		}
+	}
+	return (false); 
+}
+
 std::ostream	&operator<<(std::ostream &os, const LineView &lineView) {
 	static const char	*directionToStrClr[LineView::nDirection] {
 		[static_cast<int>(LineView::Direction::HORIZONTAL)]	= "HORIZONTAL",

@@ -63,7 +63,9 @@ class LineView {
 		static SideView	_getView(const Board &board, const Position pos, const StepDir& sDir);
 		// Calculate the len of consecutive pieces of the _stoneAtPos type at _pos in _dir direction
 		static size_t	_getGroupLen(const SideView &nView, const SideView &pView, Stone stoneAt);
-
+		
+		// only checks 0xXsy and yxX0, so it needs to be calls invertion + and - views (X is stoneAt)
+		static bool		_posCanBeCaptured(const SideView &nView, const SideView &pView, Stone stoneAt);
 
 	public:
 		LineView(const LineView &) = delete;
@@ -82,6 +84,10 @@ class LineView {
 
 		const SideView	&getViewNegative(void) const;
 		const SideView	&getViewPositive(void) const;	// View to the right / bot in the vertical case
+
+		// Check if our winning position can be taken
+		bool	canBeCaptured(void) const;
+		bool	winCanBeCaptured(void) const;
 
 		// Return a vector for the steping, based on our dir,s Always positive
 		inline const StepDir	&getStepDir(void) const {

@@ -59,24 +59,45 @@ bool	Board::_checkLastMoveWin(void) {
 }
 
 // Check if we did a 5 that cannot be taken, if a 5 can be taken then store in in lastMoveWinner
+// bool	Board::_checkWinBy5(const Position pos, const PlayerID player) {
+// 	// Evaluate 4 LineViews
+// 	if (_positionHas5(pos) == toStone(player)) {
+// 		if (true) {// One of the made 5 cannot be taken // TODO
+// 			// if len bigger than 5 then check only middle
+// 			return (_setWinner(player));
+// 		} else { // Save position for next turn
+// 			_lastMoveWinner = toStone(player);
+// 			_lastMoveWinningPos = pos;
+// 		}
+// 	}
+// 	return (_done);
+
+
+// 	// count taken poss
+// 	// if one poss cannot be taken
+// 	// if _onOf the poss cannot be taken
+// 	// 	win
+// }
+
 bool	Board::_checkWinBy5(const Position pos, const PlayerID player) {
-	// Evaluate 4 LineViews
-	if (_positionHas5(pos) == toStone(player)) {
-		if (true) {// One of the made 5 cannot be taken // TODO
-			// if len bigger than 5 then check only middle
-			return (_setWinner(player));
-		} else { // Save position for next turn
-			_lastMoveWinner = toStone(player);
-			_lastMoveWinningPos = pos;
+	bool	winCanBeCaptured = false;
+
+	for (auto i = 0; i < LineView::nDirection; ++i) {
+		const LineView	LV(*this, static_cast<LineView::Direction>(i), pos);
+
+		if (LV.getGroupLen() >= Board::MinLenToWin) {
+			if (LV.winCanBeCaptured()) {
+				winCanBeCaptured = true;	// Check next turn
+			} else {
+				return (_setWinner(player));
+			}
 		}
 	}
-	return (_done);
-
-
-	// count taken poss
-	// if one poss cannot be taken
-	// if _onOf the poss cannot be taken
-	// 	win
+	if (winCanBeCaptured) {
+		_lastMoveWinner = toStone(player);
+		_lastMoveWinningPos = pos;
+	}
+	return (false);
 }
 
 bool	Board::_checkWinByCapture(void) {
@@ -100,7 +121,6 @@ void	Board::_capture2(const Position pos, const PlayerID player) {
 	
 	for (auto i = 0; i < LineView::nDirection; ++i) {
 		const LineView	LV(*this, static_cast<LineView::Direction>(i), pos);
-		std::cout << LV;
 		auto nView = LV.getViewNegative();
 		auto pView = LV.getViewPositive();
 

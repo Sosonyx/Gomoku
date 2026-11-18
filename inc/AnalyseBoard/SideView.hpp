@@ -17,6 +17,7 @@ struct StoneGroup {
 		:	len(0), stone(Stone::NONE)	{}
 	StoneGroup(const Board::size_t _len, const Stone _stone)
 		:	len(_len), stone(_stone)	{}
+	inline bool	is(Board::size_t _len, Stone _stone) const {return (len == _len && stone == _stone);};
 };
 
 std::ostream	&operator<<(std::ostream &os, const StoneGroup &stoneGroup);
