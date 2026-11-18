@@ -7,6 +7,7 @@ SRC =  	main.cpp  \
 		Render.cpp	\
 		AnalyseBoard/Analyse.cpp	\
 		AnalyseBoard/LineView.cpp	\
+		AnalyseBoard/SideView.cpp	\
 
 D_SRC = src/
 

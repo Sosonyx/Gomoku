@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include "LineView.hpp"
 
 Stone	Game::_startGame() {
 	Board		board(_settings);
@@ -15,7 +16,8 @@ Stone	Game::_startGame() {
 		} else {
 			move =_render.detectPlayerMove(board, turn); // temporaryyy
 		}
-		if (move.x == static_cast<uint16_t>(-1) && move.y == static_cast<uint16_t>(-1)) {
+		if (move.x == static_cast<Board::size_t>(-1) && move.y == static_cast<Board::size_t>(-1)) {
+		// if (move.x == static_cast<uint16_t>(-1) && move.y == static_cast<uint16_t>(-1)) {
 			//handle invalid move if there is ones
 			continue; // temporary, just to test the loop
 		}

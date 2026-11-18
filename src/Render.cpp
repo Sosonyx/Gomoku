@@ -9,7 +9,7 @@ namespace
 	constexpr int WindowHeight = 1000;
 
 
-	constexpr int GridSize = BoardSize + 2;
+	constexpr int GridSize = Board::Board::BoardSize + 2;
 	constexpr int GridVerticalMargin = 30;
 	constexpr int GridHorizontalMargin = 60;
 	constexpr int GridHeight = WindowHeight - 2 * GridVerticalMargin;
@@ -122,8 +122,8 @@ void Render::renderStone(int x, int y, Stone stone, bool preview)
 
 void Render::renderStones(Board &board)
 {
-    for (int x = 0; x < BoardSize; x++) {
-        for (int y = 0; y < BoardSize; y++) {
+    for (int x = 0; x < Board::BoardSize; x++) {
+        for (int y = 0; y < Board::BoardSize; y++) {
             Stone stone = board.getStoneAt(x, y);
             if (stone != Stone::NONE) {
                 renderStone(x, y, stone);
@@ -160,12 +160,12 @@ bool Render::isStartButton(int x, int y) const
 
 Move Render::pixelToGrid(int x, int y) const
 {
-    uint16_t gridX = (x - GridHorizontalMargin + GridSpacing / 2)
+    Board::size_t gridX = (x - GridHorizontalMargin + GridSpacing / 2)
         / GridSpacing - 1;
-    uint16_t gridY = (y - GridVerticalMargin + GridSpacing / 2)
+    Board::size_t gridY = (y - GridVerticalMargin + GridSpacing / 2)
         / GridSpacing - 1;
 
-    return Move{(gridX),(gridY)};
+    return Move{gridX, gridY};
 }
 
 Move Render::detectPlayerMove(Board &board, PlayerID player)
@@ -185,13 +185,13 @@ Move Render::detectPlayerMove(Board &board, PlayerID player)
         // }
         if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT) {
             Move move = pixelToGrid(event.button.x, event.button.y);
-            if (move.x != static_cast<uint16_t>(-1)
+            if (move.x != static_cast< Board::size_t>(-1)
                 && board.isMoveLegal(move, player)) {
                 return move;
             }
         }
     }
-    return Move{static_cast<uint16_t>(-1), static_cast<uint16_t>(-1)}; // Invalid move
+    return Move{static_cast< Board::size_t>(-1), static_cast< Board::size_t>(-1)}; // Invalid move
 }
 
 void Render::renderGame(Board &board)

@@ -14,7 +14,7 @@ struct Analyse {
 	
 	public:
 		uint16_t	nCaptures;
-		LineView		lines[nDirection];
+		LineView		lines[LineView::nDirection];
 
 	public:
 		Analyse(const Board &board, const Move pos);					// Look at a position
