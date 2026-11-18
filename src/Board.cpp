@@ -46,7 +46,8 @@ void	Board::_iterOnWinPosition(void) {
 	
 }
 
-bool	Board::_checkWinBy5(const Position pos, const PlayerID player) {
+// Check if we took the 5 aligned from previous play
+bool	Board::_checkLastMoveWin(void) {
 	if (_lastMoveWinner != Stone::NONE) {	// If last turn was winning for the other
 		Stone checkAgain = _positionHas5(_lastMoveWinningPos);
 		if (_lastMoveWinner == checkAgain) {	// Check again the winner position
@@ -54,7 +55,12 @@ bool	Board::_checkWinBy5(const Position pos, const PlayerID player) {
 		}
 		_lastMoveWinner = Stone::NONE;
 	}
+	return (false);
+}
 
+// Check if we did a 5 that cannot be taken, if a 5 can be taken then store in in lastMoveWinner
+bool	Board::_checkWinBy5(const Position pos, const PlayerID player) {
+	// Evaluate 4 LineViews
 	if (_positionHas5(pos) == toStone(player)) {
 		if (true) {// One of the made 5 cannot be taken // TODO
 			// if len bigger than 5 then check only middle
@@ -65,6 +71,12 @@ bool	Board::_checkWinBy5(const Position pos, const PlayerID player) {
 		}
 	}
 	return (_done);
+
+
+	// count taken poss
+	// if one poss cannot be taken
+	// if _onOf the poss cannot be taken
+	// 	win
 }
 
 bool	Board::_checkWinByCapture(void) {
@@ -79,12 +91,7 @@ bool	Board::_checkWinByCapture(void) {
 bool	Board::_checkWinner(const Position pos, const PlayerID player) {
 	// Todo: add can win by capture to settings
 	// if can win by capture
-	do {
-		if (_checkWinBy5(pos, player))
-			break ;
-		if (_checkWinByCapture())
-			break ;
-	} while(0);
+	_checkLastMoveWin() || _checkWinBy5(pos, player) || _checkWinByCapture();
 	return (_done);
 }
 
@@ -92,26 +99,26 @@ void	Board::_capture2(const Position pos, const PlayerID player) {
 	if (!_settings.capture2)	return ;
 	
 	for (auto i = 0; i < LineView::nDirection; ++i) {
-		LineView	LV(*this, static_cast<LineView::Direction>(i), pos);
+		const LineView	LV(*this, static_cast<LineView::Direction>(i), pos);
+		std::cout << LV;
 		auto nView = LV.getViewNegative();
 		auto pView = LV.getViewPositive();
 
 		if (nView.makesCapture2(player)) {
-			const auto	stepDirN = LV.getStepDir(LineView::ViewDirection::NEGATIVE);
+			const StepDir	stepDirN = -LV.getStepDir();
 
 			_placeAt(pos.x + stepDirN.x, pos.y + stepDirN.y, Stone::NONE);			
 			_placeAt(pos.x + 2 * stepDirN.x, pos.y + 2 * stepDirN.y, Stone::NONE);
 			++_nCapture[toInt(player)];
 		}
 		if (pView.makesCapture2(player)) {
-			const auto	stepDirP = LV.getStepDir(LineView::ViewDirection::POSITIVE);
+			const StepDir	stepDirP = LV.getStepDir();
 			
 			_placeAt(pos.x + stepDirP.x, pos.y + stepDirP.y, Stone::NONE);			
 			_placeAt(pos.x + 2 * stepDirP.x, pos.y + 2 * stepDirP.y, Stone::NONE);			
 			++_nCapture[toInt(player)];
 		}
 	}
-	(void)player;
 }
 
 bool	Board::_makesFree3(const Move move, const PlayerID _player) const {
@@ -151,7 +158,6 @@ void	Board::playStone(const Move move, const PlayerID player) {
 
 	if (_settings.capture2)
 		_capture2(move, player);
-	
 	_checkWinner(move, player);
 }
 

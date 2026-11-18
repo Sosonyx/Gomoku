@@ -14,7 +14,7 @@ D_BUILD = .build/
 OBJ =  	$(addprefix $(D_BUILD), $(SRC:.cpp=.o))
 
 CPP =  c++
-FLAGS = -Wall -Wextra -Werror -MMD -O3 -g -std=c++17
+FLAGS = -Wall -Wextra -Werror -MMD -O3 -g -std=c++23
 INC = inc/ inc/AnalyseBoard
 SDL_LIBS = sdl2 SDL2_ttf SDL2_image SDL2_gfx
 IFLAGS =  $(addprefix -I, $(INC)) $(shell pkg-config --cflags $(SDL_LIBS))

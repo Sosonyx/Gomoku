@@ -1,6 +1,5 @@
 #include "LineView.hpp"
 
-
 constexpr Board::size_t	LineView::_getLineLen(const Position &pos, const Direction dir) {
 	if (dir == Direction::HORIZONTAL || dir == Direction::VERTICAL)
 		return (Board::BoardSize);
@@ -26,114 +25,77 @@ constexpr Board::size_t	LineView::_getIPos(const Position &pos, const Direction 
 	return (0);
 }
 
-void	LineView::_setGroupLen(void) {
-	const StepDir	&vecInDir = dirVec[static_cast<uint16_t>(ViewDirection::POSITIVE)][static_cast<uint16_t>(_dir)];
-
-	const Board::size_t	lenPositive = _lineLen - 1 - _iPos;
-	Board::size_t		groupLenPositive = 0;
-
-	for (auto i = 1; i <= lenPositive; ++i) {
-		const Board::size_t nX = _pos.x + i * vecInDir.x;
-		const Board::size_t nY = _pos.y + i * vecInDir.y;
-		if (_board.getStoneAt(nX, nY) == _stoneAtPos)
-			++groupLenPositive;
+SideView	LineView::_getView(const Board &board, const Position pos, const StepDir& sDir) {
+	auto	getDistOnAxis = [](const size_t posAxis, const ssize_t stepAxis) -> Board::size_t {
+		if (!stepAxis)
+			return (Board::BoardSize);
+		if (stepAxis > 0)
+			return (Board::BoardSize - posAxis - 1);
 		else
-			break;
-	}
+			return (posAxis);
+	};
+	const size_t	nStep = std::min(getDistOnAxis(pos.x, sDir.x), getDistOnAxis(pos.y, sDir.y));
+	if (!nStep)
+		return SideView();
 	
-	const Board::size_t	lenNegative = _iPos;
-	Board::size_t		groupLenNegative = 0;
+	SideView	view;
+	
+	size_t	groupLen = 1;
+	Stone	groupStone = board[pos.x + sDir.x, pos.y + sDir.y];
 
-	for (auto i = 1; i <= lenNegative; ++i) {
-		const Board::size_t nX = _pos.x - i * vecInDir.x;
-		const Board::size_t nY = _pos.y - i * vecInDir.y;
-		if (_board.getStoneAt(nX, nY) == _stoneAtPos)
-			++groupLenNegative;
-		else
-			break;
+	for (auto iStep = 2; iStep <= nStep; ++iStep) {
+		const size_t nX = pos.x + (sDir.x * iStep);
+		const size_t nY = pos.y + (sDir.y * iStep);
+
+		const Stone stoneAtN = board[nX, nY];
+		if (stoneAtN == groupStone) {
+			++groupLen;
+		} else {
+			view.push(groupLen, groupStone);
+			groupStone = stoneAtN;
+			groupLen = 1;
+		}
 	}
-	_groupLen = 1 + groupLenPositive + groupLenNegative;
+	view.push(groupLen, groupStone);
+	return (view);
+}
+
+Board::size_t	LineView::_getGroupLen(const SideView &nView, const SideView &pView, Stone stoneAt) {
+	if (stoneAt == Stone::NONE)
+		return (0);
+	const size_t	nLen = (!nView.size() || nView[0].stone != stoneAt) ? 0 : nView[0].len;
+	const size_t	pLen = (!pView.size() || pView[0].stone != stoneAt) ? 0 : pView[0].len;
+
+	return (nLen + 1 + pLen);
 }
 
 LineView::LineView(const Board &board, Direction dir, const Position pos)
 :		_board(board), _pos(pos), _stoneAtPos(board.getStoneAt(pos)), _dir(dir),
 		_lineLen(_getLineLen(pos, dir)),
-		_iPos(_getIPos(pos, dir))
-{
-	if (_stoneAtPos != Stone::NONE)
-		_setGroupLen();
-}
+		_iPos(_getIPos(pos, dir)),
+		_negativeView(_getView(_board, pos, -LineView::getStepDir(dir))),
+		_positiveView(_getView(_board, pos, LineView::getStepDir(dir))),
+		_groupLen(_getGroupLen(_negativeView, _positiveView, _stoneAtPos))
+{}
 
 LineView::LineView(const Board &board, Direction dir, const Move move, PlayerID playerID)	// Look at a move
 :		_board(board), _pos(move), _stoneAtPos(toStone(playerID)), _dir(dir),
 		_lineLen(_getLineLen(move, dir)),
-		_iPos(_getIPos(move, dir))
-{
-	_setGroupLen();
-}
+		_iPos(_getIPos(move, dir)),
+		_negativeView(_getView(_board, move, -LineView::getStepDir(dir))),
+		_positiveView(_getView(_board, move, LineView::getStepDir(dir))),
+		_groupLen(_getGroupLen(_negativeView, _positiveView, _stoneAtPos))
+{}
 
-void	LineView::_makeView(const ViewDirection viewDir) {
-	SideView	*view = nullptr;
-	if (viewDir == ViewDirection::NEGATIVE) {	// If already created
-		if (_negativeCreated)	return ;
-		_negativeCreated = true;
-		view = &_negativeView;
-	} else {
-		if (_positiveCreated)	return ;
-		_positiveCreated = true;
-		view = &_positiveView;
-	}
-
-	const size_t	nStep = (viewDir == ViewDirection::NEGATIVE) ? _iPos : _lineLen - _iPos - 1;
-	if (!nStep)	return ;	// If at endOfLine
-
-	// const ssize_t	step = (viewDir == ViewDirection::NEGATIVE) ? -1 : 1;
-	const auto		&vecDirX = dirVec[static_cast<uint16_t>(viewDir)][static_cast<uint16_t>(_dir)].x;
-	const auto		&vecDirY = dirVec[static_cast<uint16_t>(viewDir)][static_cast<uint16_t>(_dir)].y;
-	
-	
-	size_t	groupLen = 1;
-	Stone		groupStone = _board.getStoneAt(_pos.x + vecDirX, _pos.y + vecDirY);
-
-	for (auto iStep = 2; iStep <= nStep; ++iStep) {
-		const size_t nX = _pos.x + (vecDirX * iStep);
-		const size_t nY = _pos.y + (vecDirY * iStep);
-
-		const Stone stoneAtN = _board.getStoneAt(nX, nY);
-		if (stoneAtN == groupStone) {
-			++groupLen;
-		} else {
-			view->push(groupLen, groupStone);
-			groupStone = stoneAtN;
-			groupLen = 1;
-		}
-	}
-	view->push(groupLen, groupStone);
-}
-
-bool LineView::negativeMakesCapture2(void){
-	if (!_negativeCreated)	_makeView(ViewDirection::NEGATIVE);
-
-	return (false);
-}
-
-bool LineView::positiveMakesCapture2(void){
-	if (!_positiveCreated)	_makeView(ViewDirection::POSITIVE);
-	
-	return (false);
-}
-
-const SideView	&LineView::getViewNegative(void) {
-	if (!_negativeCreated)	_makeView(ViewDirection::NEGATIVE);
+const SideView	&LineView::getViewNegative(void) const {
 	return (_negativeView);
 }
 
-const SideView	&LineView::getViewPositive(void) {
-	if (!_positiveCreated)	_makeView(ViewDirection::POSITIVE);
+const SideView	&LineView::getViewPositive(void) const {
 	return (_positiveView);
 }
 
-std::ostream	&operator<<(std::ostream &os, LineView &lineView) {
+std::ostream	&operator<<(std::ostream &os, const LineView &lineView) {
 	static const char	*directionToStrClr[LineView::nDirection] {
 		[static_cast<int>(LineView::Direction::HORIZONTAL)]	= "HORIZONTAL",
 		[static_cast<int>(LineView::Direction::VERTICAL)]	= "VERTICAL",
