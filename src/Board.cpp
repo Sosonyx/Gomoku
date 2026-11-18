@@ -102,7 +102,6 @@ void	Board::_capture2(const Position pos, const PlayerID player) {
 			_placeAt(pos.x + stepDirN.x, pos.y + stepDirN.y, Stone::NONE);			
 			_placeAt(pos.x + 2 * stepDirN.x, pos.y + 2 * stepDirN.y, Stone::NONE);
 			++_nCapture[toInt(player)];
-			// std::cout << nView << std::endl;
 		}
 		if (pView.makesCapture2(player)) {
 			const auto	stepDirP = LV.getStepDir(LineView::ViewDirection::POSITIVE);
@@ -110,7 +109,6 @@ void	Board::_capture2(const Position pos, const PlayerID player) {
 			_placeAt(pos.x + stepDirP.x, pos.y + stepDirP.y, Stone::NONE);			
 			_placeAt(pos.x + 2 * stepDirP.x, pos.y + 2 * stepDirP.y, Stone::NONE);			
 			++_nCapture[toInt(player)];
-			// std::cout << pView << std::endl;
 		}
 	}
 	(void)player;

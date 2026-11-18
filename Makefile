@@ -5,7 +5,6 @@ SRC =  	main.cpp  \
 		Game.cpp	\
 		Player.cpp  \
 		Render.cpp	\
-		AnalyseBoard/Analyse.cpp	\
 		AnalyseBoard/LineView.cpp	\
 		AnalyseBoard/SideView.cpp	\
 

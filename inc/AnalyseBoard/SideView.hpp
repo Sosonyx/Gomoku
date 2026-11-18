@@ -73,11 +73,3 @@ class	SideView {
 };
 
 std::ostream	&operator<<(std::ostream &os, const SideView &sideView);
-// inline std::ostream	&operator<<(std::ostream &os, const SideView &sideView) {
-// 	os << '[';
-// 	for (auto i = 0; i < sideView.size(); ++i)	
-// 		os << sideView[i];
-// 	os << ']';
-// 	return (os);
-// }
-
