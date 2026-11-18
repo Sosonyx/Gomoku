@@ -69,9 +69,11 @@ class Board
 		
 		void	_iterOnWinPosition(void);
 
-		bool	_checkWinner(const Position pos, const PlayerID player);
+		bool	_checkLastMoveWin(void);
 		bool	_checkWinBy5(const Position pos, const PlayerID player);
 		bool	_checkWinByCapture(void);
+
+		bool	_checkWinner(const Position pos, const PlayerID player);
 
 		inline bool	_setWinner(const Stone stone = Stone::NONE) {
 			_winner = stone;
@@ -114,6 +116,11 @@ class Board
 			if (pos.x >= BoardSize || pos.y >= BoardSize)
 				throw (std::runtime_error("getStone call is OOB"));
 			return (_board[pos.x][pos.y]);
+		}
+		inline Stone	operator[](const size_t x, const size_t y) const{
+			if (x >= BoardSize || y >= BoardSize) 
+				throw (std::runtime_error("getStone call is OOB"));
+			return (_board[x][y]);
 		}
 
 		inline bool	done(void)	const {	return (_done);	}
