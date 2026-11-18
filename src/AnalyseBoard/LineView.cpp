@@ -114,7 +114,7 @@ bool	LineView::canBeCaptured(void) const {
 		return (false);
 	
 	return (_posCanBeCaptured(_negativeView, _positiveView, _stoneAtPos)
-		|| _posCanBeCaptured(_positiveView, _negativeView, _stoneAtPos));	
+			|| _posCanBeCaptured(_positiveView, _negativeView, _stoneAtPos));	
 }
 
 
@@ -142,6 +142,28 @@ bool	LineView::winCanBeCaptured(void) const {
 	}
 	return (false); 
 }
+
+// HERE TODO
+bool	LineView::_posMakesFree3(const SideView &nView, const SideView &pView, Stone stoneAt) {
+	(void)nView;
+	(void)pView;
+	(void)stoneAt;
+	// Chekc the paterns ...
+	return (false);
+}
+
+
+// TODO: Board to win - 2 ?
+bool	LineView::makesFree3(void) const {
+	if (_iPos == 0 || _iPos == _lineLen - 1)	// If on extremity
+		return (false);
+	if (_lineLen < (Board::nCaptureToWin + 1)) // Or cannot make a 4 allign with 2 free on side because its too small
+		return (false);
+	
+	return (_posMakesFree3(_negativeView, _positiveView, _stoneAtPos)
+			|| _posMakesFree3(_positiveView, _negativeView, _stoneAtPos));	
+}
+
 
 std::ostream	&operator<<(std::ostream &os, const LineView &lineView) {
 	static const char	*directionToStrClr[LineView::nDirection] {

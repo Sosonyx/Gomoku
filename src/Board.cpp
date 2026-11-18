@@ -59,26 +59,6 @@ bool	Board::_checkLastMoveWin(void) {
 }
 
 // Check if we did a 5 that cannot be taken, if a 5 can be taken then store in in lastMoveWinner
-// bool	Board::_checkWinBy5(const Position pos, const PlayerID player) {
-// 	// Evaluate 4 LineViews
-// 	if (_positionHas5(pos) == toStone(player)) {
-// 		if (true) {// One of the made 5 cannot be taken // TODO
-// 			// if len bigger than 5 then check only middle
-// 			return (_setWinner(player));
-// 		} else { // Save position for next turn
-// 			_lastMoveWinner = toStone(player);
-// 			_lastMoveWinningPos = pos;
-// 		}
-// 	}
-// 	return (_done);
-
-
-// 	// count taken poss
-// 	// if one poss cannot be taken
-// 	// if _onOf the poss cannot be taken
-// 	// 	win
-// }
-
 bool	Board::_checkWinBy5(const Position pos, const PlayerID player) {
 	bool	winCanBeCaptured = false;
 
@@ -141,12 +121,17 @@ void	Board::_capture2(const Position pos, const PlayerID player) {
 	}
 }
 
-bool	Board::_makesFree3(const Move move, const PlayerID _player) const {
-	Stone	player = toStone(_player);	// TODO
-	// Check stuff
-	(void)move;
-	(void)player;
-	return (false);
+bool	Board::_makes2Free3(const Move move, const PlayerID player) const {
+	constexpr uint8_t	maxFree3 = 2;
+	uint8_t	nFree3 = 0;
+
+	for (auto i = 0; i < LineView::nDirection && nFree3 < maxFree3; ++i) {
+		const LineView	LV(*this, static_cast<LineView::Direction>(i), move, player);
+
+		if (LV.makesFree3())
+			++nFree3;
+	}
+	return (nFree3 >= maxFree3);
 }
 
 bool	Board::isMoveLegal(const Move move, const PlayerID player) const {
@@ -154,7 +139,7 @@ bool	Board::isMoveLegal(const Move move, const PlayerID player) const {
 		return (false);
 	if (_board[move.x][move.y] != Stone::NONE)
 		return (false);
-	if (_settings.free3 && _makesFree3(move, player))
+	if (_settings.free3 && _makes2Free3(move, player))
 		return (false);
 	return (true);
 }
