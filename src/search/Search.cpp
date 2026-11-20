@@ -3,12 +3,12 @@
 Move	findBestMove(const Board &board, PlayerID who)
 {
 	SearchState	state(board);
-	Move		moves[BoardSize * BoardSize];
+	Move		moves[Board::BoardSize * Board::BoardSize];
 	const int	n = state.generateMoves(moves);
 
-	const int	center = BoardSize / 2;
+	const int	center = Board::BoardSize / 2;
 	int			bestDist = -1;
-	Move		best(static_cast<uint16_t>(-1), static_cast<uint16_t>(-1));
+	Move		best(static_cast<Board::size_t>(-1), static_cast<Board::size_t>(-1));
 
 	for (int i = 0; i < n; ++i) {
 		if (!board.isMoveLegal(moves[i], who))

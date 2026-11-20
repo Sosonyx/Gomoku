@@ -7,6 +7,7 @@ SRC =  	main.cpp  \
 		render/Render.cpp	\
 		analysis/Analyse.cpp	\
 		analysis/LineView.cpp	\
+		analysis/SideView.cpp	\
 		search/Search.cpp	\
 		search/SearchState.cpp	\
 
@@ -16,7 +17,7 @@ D_BUILD = .build/
 OBJ =  	$(addprefix $(D_BUILD), $(SRC:.cpp=.o))
 
 CPP =  c++
-FLAGS = -Wall -Wextra -Werror -MMD -O3 -g -std=c++17
+FLAGS = -Wall -Wextra -Werror -MMD -O3 -g -std=c++23
 INC = inc/
 SDL_LIBS = sdl2 SDL2_ttf SDL2_image SDL2_gfx
 IFLAGS =  $(addprefix -I, $(INC)) $(shell pkg-config --cflags $(SDL_LIBS))

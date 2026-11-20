@@ -1,4 +1,5 @@
 #include "game/Game.hpp"
+#include "analysis/LineView.hpp"
 #include "search/Search.hpp"
 
 #include <chrono>
@@ -21,7 +22,7 @@ Stone	Game::_startGame() {
 			move = _render.detectPlayerMove(board, turn, lastPlayer, lastMoveTime,
 				board.getCapture(PlayerID::P1), board.getCapture(PlayerID::P2));
 		}
-		if (move.x == static_cast<uint16_t>(-1) && move.y == static_cast<uint16_t>(-1)) {
+		if (move.x == static_cast<Board::size_t>(-1) && move.y == static_cast<Board::size_t>(-1)) {
 			//handle invalid move if there is ones
 			continue; // temporary, just to test the loop
 		}

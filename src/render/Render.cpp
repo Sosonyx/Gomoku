@@ -12,7 +12,7 @@ namespace
 	constexpr int WindowHeight = 1000;
 
 
-	constexpr int GridSize = BoardSize + 2;
+	constexpr int GridSize = Board::BoardSize + 2;
 	constexpr int GridVerticalMargin = 30;
 	constexpr int GridHorizontalMargin = 60;
 	constexpr int GridHeight = WindowHeight - 2 * GridVerticalMargin;
@@ -28,8 +28,8 @@ namespace
 
 Render::Render()
     : _renderer(nullptr), _window(nullptr), _texture(nullptr), _surface(nullptr),
-      _font(nullptr), _hoveredMove(static_cast<uint16_t>(-1),
-          static_cast<uint16_t>(-1)), _hoveredMoveLegal(false),
+      _font(nullptr), _hoveredMove(static_cast<Board::size_t>(-1),
+          static_cast<Board::size_t>(-1)), _hoveredMoveLegal(false),
       _hoveredStone(Stone::NONE)
 {}
 
@@ -173,8 +173,8 @@ void Render::renderStone(int x, int y, Stone stone, bool preview)
 
 void Render::renderStones(Board &board)
 {
-    for (int x = 0; x < BoardSize; x++) {
-        for (int y = 0; y < BoardSize; y++) {
+    for (int x = 0; x < Board::BoardSize; x++) {
+        for (int y = 0; y < Board::BoardSize; y++) {
             Stone stone = board.getStoneAt(x, y);
             if (stone != Stone::NONE) {
                 renderStone(x, y, stone);
@@ -276,10 +276,10 @@ Move Render::pixelToGrid(int x, int y) const
     const int gridY = (y - GridVerticalMargin + GridSpacing / 2)
         / GridSpacing - 1;
 
-    if (gridX < 0 || gridX >= BoardSize || gridY < 0
-        || gridY >= BoardSize)
-        return Move(static_cast<uint16_t>(-1), static_cast<uint16_t>(-1));
-    return Move(static_cast<uint16_t>(gridX), static_cast<uint16_t>(gridY));
+    if (gridX < 0 || gridX >= Board::BoardSize || gridY < 0
+        || gridY >= Board::BoardSize)
+        return Move(static_cast<Board::size_t>(-1), static_cast<Board::size_t>(-1));
+    return Move(static_cast<Board::size_t>(gridX), static_cast<Board::size_t>(gridY));
 }
 
 Move Render::detectPlayerMove(Board &board, PlayerID player,
@@ -287,7 +287,7 @@ Move Render::detectPlayerMove(Board &board, PlayerID player,
     uint16_t player1Captures, uint16_t player2Captures)
 {
     SDL_Event event;
-    _hoveredMove = Move(static_cast<uint16_t>(-1), static_cast<uint16_t>(-1));
+    _hoveredMove = Move(static_cast<Board::size_t>(-1), static_cast<Board::size_t>(-1));
     _hoveredMoveLegal = false;
     _hoveredStone = toStone(player);
 
@@ -305,8 +305,8 @@ Move Render::detectPlayerMove(Board &board, PlayerID player,
                     continue;
 
                 _hoveredMove = move;
-                _hoveredMoveLegal = move.x != static_cast<uint16_t>(-1)
-                    && move.y != static_cast<uint16_t>(-1)
+                _hoveredMoveLegal = move.x != static_cast<Board::size_t>(-1)
+                    && move.y != static_cast<Board::size_t>(-1)
                     && board.isMoveLegal(move, player);
                 renderGame(board, lastPlayer, moveTime,
                     player1Captures, player2Captures);
@@ -318,8 +318,8 @@ Move Render::detectPlayerMove(Board &board, PlayerID player,
                 if (move.x == _hoveredMove.x && move.y == _hoveredMove.y) {
                     if (_hoveredMoveLegal)
                         return move;
-                } else if (move.x != static_cast<uint16_t>(-1)
-                    && move.y != static_cast<uint16_t>(-1)
+                } else if (move.x != static_cast<Board::size_t>(-1)
+                    && move.y != static_cast<Board::size_t>(-1)
                     && board.isMoveLegal(move, player)) {
                     return move;
                 }

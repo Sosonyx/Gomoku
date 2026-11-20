@@ -6,20 +6,41 @@
 #include "board/Board.hpp"
 #include "analysis/SideView.hpp"
 
-constexpr uint8_t	nDirection = 4;
+#include <iostream>
+
+struct StepDir {
+	using ssize_t = Board::ssize_t;
+	ssize_t x;
+	ssize_t y;
+};
+
+constexpr StepDir operator-(const StepDir dir) {
+	return {static_cast<StepDir::ssize_t>(-dir.x), static_cast<StepDir::ssize_t>(-dir.y)};
+}
+
 class LineView {
-	public:	// PLUS_DIAG is y = x, MINUS_DIAG is y = -x
+	public:
+		using	ssize_t = Board::ssize_t;
+		using	size_t = Board::size_t;
+
 		enum Direction: uint8_t {
-				HORIZONTAL,
-				VERTICAL,
-				PLUS_DIAG,	// Line equation is: y = x	// Goes left-up to right-down because of screen coordinate system
-				MINUS_DIAG	// Line equation is: y = -x	// Goes left-down to right-up because of screen coordinate system
+			HORIZONTAL,
+			VERTICAL,
+			PLUS_DIAG,	// Line equation is: y = x	// Goes left-up to right-down because of screen coordinate system
+			MINUS_DIAG	// Line equation is: y = -x	// Goes left-down to right-up because of screen coordinate system
 		};
 	
+		static constexpr uint8_t	nViewDirection = 2;
+		static constexpr uint8_t	nDirection = 4;
+		
 	private:
-		using DirVector = struct {int x; int y;};
-		static DirVector	dirVec[nDirection];
-	
+		static constexpr StepDir	dirVec[nDirection] =  {
+				[static_cast<uint16_t>(Direction::HORIZONTAL)]	= {.x = 1, .y = 0},
+				[static_cast<uint16_t>(Direction::VERTICAL)]	= {.x = 0, .y = 1},
+				[static_cast<uint16_t>(Direction::PLUS_DIAG)]	= {.x = 1, .y = 1},
+				[static_cast<uint16_t>(Direction::MINUS_DIAG)]	= {.x = 1, .y = -1},
+		};
+
 	private:
 		const Board		&_board;
 
@@ -27,32 +48,76 @@ class LineView {
 		const Stone		_stoneAtPos;
 		const Direction	_dir;
 
-		const uint16_t	_lineLen;
-		const uint16_t	_iPos;
+		const size_t	_lineLen;
+		const size_t	_iPos;
 		
-		uint16_t			_groupLen = 0;
-		SideView<BoardSize>	_left;
-		bool				_leftCreated = false;
-		SideView<BoardSize>	_right;
-		bool				_rightCreated = false;
+		const SideView	_negativeView;
+		const SideView	_positiveView;
+
+		const size_t	_groupLen = 0;
 
 	private:
-		static constexpr uint16_t	_getLineLen(const Position &pos, const Direction dir);
-		static constexpr uint16_t	_getIPos(const Position &pos, const Direction dir);
-
-		void	_setGroupLen(void);	// Calculate the len of consecutive pieces of the _stoneAtPos type at _pos in _dir direction
+		static constexpr size_t	_getLineLen(const Position &pos, const Direction dir);
+		static constexpr size_t	_getIPos(const Position &pos, const Direction dir);
+		
+		static SideView	_getView(const Board &board, const Position pos, const StepDir& sDir);
+		// Calculate the len of consecutive pieces of the _stoneAtPos type at _pos in _dir direction
+		static size_t	_getGroupLen(const SideView &nView, const SideView &pView, Stone stoneAt);
+		
+		// only checks 0xXsy and yxX0, so it needs to be calls invertion + and - views (X is stoneAt)
+		static bool		_posCanBeCaptured(const SideView &nView, const SideView &pView, Stone stoneAt);
+		
+		// only checks 2 paterns, so need revers and 2 calls gngngn
+		// only checks 0xXsy and yxX0, so it needs to be calls invertion + and - views (X is stoneAt)
+		static bool		_posMakesFree3(const SideView &nView, const SideView & pView,const PlayerID player, const size_t groupLen);
 
 	public:
-		LineView(const Board &board, Direction dir, const Position pos);				// Look at a position
-		LineView(const Board &board, Direction dir, const Move move, PlayerID playerID);	// Look at a move
+		LineView(const LineView &) = delete;
+		LineView(void) = delete;
 
-		inline uint16_t	getLen(void) const {	// Returns the line len
+		LineView(const Board &board, Direction dir, const Position pos);					// Look at a position
+		LineView(const Board &board, Direction dir, const Move move, PlayerID playerID);	// Look at a move
+		
+		inline size_t	getLen(void) const {	// Returns the line len
 			return (_lineLen);
 		}
-		inline uint16_t	getGroupLen(void) const {	// Returns the len of consecutive pieces of the _stoneAtPos type at _pos in _dir direction
+
+		inline size_t	getGroupLen(void) const {	// Returns the len of consecutive pieces of the _stoneAtPos type at _pos in _dir direction
 			return (_groupLen);
 		}
 
-		const SideView<BoardSize>	&getViewNegative(void);	// View top the left / top in the vertical case
-		const SideView<BoardSize>	&getViewPositive(void);	// View to the right / bot in the vertical case
+		const SideView	&getViewNegative(void) const;
+		const SideView	&getViewPositive(void) const;	// View to the right / bot in the vertical case
+
+		// 4 aligned with Stone:NONE on both sides
+		
+		
+		inline bool	isWin(void)	const {
+			return (_groupLen >= Board::MinLenToWin);
+		}
+		
+		// Position Creates a free 4
+		bool	isFree4(void)	const;
+		// Position Creates a free 3
+		bool	isFree3(void)	const;
+
+		// Position can be captured
+		bool	canBeCaptured(void) const;
+
+		// Check if our winning position can be taken
+		bool	winCanBeCaptured(void) const;
+
+		// Return a vector for the steping, based on our dir,s Always positive
+		inline const StepDir	&getStepDir(void) const {
+			return (dirVec[static_cast<uint16_t>(_dir)]);
+		}
+		
+		// Return a vector for the steping
+		inline static const StepDir	&getStepDir(const Direction dir) {
+			return (dirVec[static_cast<uint16_t>(dir)]);
+		}
+
+		friend std::ostream	&operator<<(std::ostream &os, const LineView &lineView);
 };
+
+

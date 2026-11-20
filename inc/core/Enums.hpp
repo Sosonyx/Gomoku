@@ -27,12 +27,12 @@ PlayerID	getOther(const PlayerID id) {
 }
 
 static inline constexpr
-int	toInt(PlayerID id) {
+int	toInt(const PlayerID id) {
 	return (id == PlayerID::P1 ? 0 : 1);
 }
 
 static inline constexpr
-Stone	toStone(PlayerID id) {
+Stone	toStone(const PlayerID id) {
 	return (id == PlayerID::P1 ? Stone::P1 : Stone::P2);
 }
 
