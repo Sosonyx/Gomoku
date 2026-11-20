@@ -35,10 +35,10 @@ class LineView {
 		
 	private:
 		static constexpr StepDir	dirVec[nDirection] =  {
-				[static_cast<uint16_t>(Direction::HORIZONTAL)]	= {.x = 1, .y = 0},
-				[static_cast<uint16_t>(Direction::VERTICAL)]	= {.x = 0, .y = 1},
-				[static_cast<uint16_t>(Direction::PLUS_DIAG)]	= {.x = 1, .y = 1},
-				[static_cast<uint16_t>(Direction::MINUS_DIAG)]	= {.x = 1, .y = -1},
+				{.x = 1, .y = 0},
+				{.x = 0, .y = 1},
+				{.x = 1, .y = 1},
+				{.x = 1, .y = -1},
 		};
 
 	private:

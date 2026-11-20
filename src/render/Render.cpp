@@ -24,6 +24,16 @@ namespace
 	constexpr int GridLineLen = GridWidth < GridHeight ? GridWidth : GridHeight;
 
     constexpr int StoneSize = GridSpacing * 0.8f; // Size of the stone based on the board size
+
+	// Font shipped in the repo, so it works on any machine (Mac, Fedora, school).
+	// Path is relative to the working dir: launch ./Gomoku from the repo root.
+	constexpr const char *RepoFontPath = "assets/DejaVuSans-Bold.ttf";
+
+	// Returns the repo font, or nullptr if it can't be opened (caller falls back).
+	TTF_Font *loadRepoFont(int size)
+	{
+		return TTF_OpenFont(RepoFontPath, size);
+	}
 }
 
 Render::Render()
@@ -76,8 +86,16 @@ void Render::initRender()
             std::string("Renderer could not be created: ") + SDL_GetError()));
     }
 
-    this->_font = TTF_OpenFont(
-        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 32);
+    // 1) Font from the repo (assets/), portable across machines.
+    this->_font = loadRepoFont(32);
+
+    // 2) Fallback: previous behaviour, hardcoded Linux system paths.
+    //    DejaVu Bold (Debian/Ubuntu layout), then Noto Sans (Fedora layout).
+    //    These paths don't exist on macOS, and /usr is read-only there (SIP).
+    if (!this->_font) {
+        this->_font = TTF_OpenFont(
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 32);
+    }
     if (!this->_font) {
         this->_font = TTF_OpenFont(
             "/usr/share/fonts/google-noto-vf/NotoSans[wght].ttf", 32);

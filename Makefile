@@ -17,11 +17,11 @@ D_BUILD = .build/
 OBJ =  	$(addprefix $(D_BUILD), $(SRC:.cpp=.o))
 
 CPP =  c++
-FLAGS = -Wall -Wextra -Werror -MMD -O3 -g -std=c++23
+FLAGS = -Wall -Wextra -Werror -Wno-c99-designator -MMD -O3 -g -std=c++23
 INC = inc/
-SDL_LIBS = sdl2 SDL2_ttf SDL2_image SDL2_gfx
+SDL_LIBS = sdl2 SDL2_ttf SDL2_image
 IFLAGS =  $(addprefix -I, $(INC)) $(shell pkg-config --cflags $(SDL_LIBS))
-LIB_FLAGS = $(shell pkg-config --libs $(SDL_LIBS))
+LIB_FLAGS = $(shell pkg-config --libs $(SDL_LIBS)) $(shell pkg-config --libs SDL2_gfx 2>/dev/null || echo -lSDL2_gfx) -Wl,-rpath,/usr/local/lib
 
 RM =  rm -rf
 
