@@ -95,6 +95,7 @@ const SideView	&LineView::getViewPositive(void) const {
 	return (_positiveView);
 }
 
+// only checks paterns in one direction, so it needs to be called with nView and pView inverted to check every posibilitty
 bool	LineView::_posCanBeCaptured(const SideView &nView, const SideView &pView, Stone stoneAt) {
 	if (stoneAt == Stone::NONE)
 		return (false);
@@ -109,8 +110,50 @@ bool	LineView::_posCanBeCaptured(const SideView &nView, const SideView &pView, S
 	return (pView[0].stone != stoneAt && nView[1].stone != pView[0].stone);
 }
 
+// -- 🟥🟦⬜ --
+// ⬜🟥🟥🟥⬜⬜
+// ⬜🟥🟥⬜🟥⬜
+// ⬜🟥⬜🟥🟥⬜
+// only checks paterns in one direction, so it needs to be called with nView and pView inverted to check every posibilitty
+bool	LineView::_posMakesFree3(const SideView &nView, const SideView &pView, const PlayerID player, const size_t groupLen) {
+	// Gives us the index of the first StartView group that isnt of stoneAt type
+	constexpr size_t	nStoneForPaterns = Board::MinLenToWin - 2;
+
+	if (nView.size() == 0 || pView.size() == 0 || groupLen > nStoneForPaterns)	// If a side is empty (we are on an edge)
+		return (false);
+
+	const size_t	nStart = nView.getIndexNotStone(player);
+	const size_t	pStart = pView.getIndexNotStone(player);
+
+	if (nStart >= nView.size() || pStart >= pView.size())	// If no space after the middle block
+		return (false);
+	if (nView[nStart].stone != Stone::NONE	// If the sides arnt free spaces
+			|| pView[pStart].stone != Stone::NONE)
+		return (false);
+
+	// From there we know that nView has at least one free stone, so we only need to check pView
+	// 	(We are always in the consecutive stone block next to nView)
+
+	// ⬜🟥🟥🟥⬜⬜	-> Check for this patern
+	if (groupLen == nStoneForPaterns)
+		return (pView[pStart].len >= 2);	// If we have 3 stone, then we need 2+ free space in one direction
+
+	// ⬜🟥🟥⬜🟥⬜	-> Check for those kind of paterns
+	// ⬜🟥⬜🟥🟥⬜
+	// Check if we have one free space, then nStoneForPaterns - patern 
+	if (pView.size() - pStart < 3) // We need one free group, one StoneAt group and one free group, so 3 groups total
+		return (false);
+
+	if (pView[pStart].is(1, Stone::NONE) == false) // If we dont have ONE free space
+		return (false);
+	const Stone	stoneAt = toStone(player);
+	if (pView[pStart + 1].is(nStoneForPaterns - groupLen, stoneAt) == false) // Then x matching
+		return (false);
+	return (pView[pStart + 2].stone == Stone::NONE);	// If we have a group of Stone::NONE after (If there is a group its minimum one len so we dont ened to check that)
+}
+
 bool	LineView::canBeCaptured(void) const {
-	if (_iPos == 0 || _iPos == _lineLen - 1)	// If on extremity
+	if (_negativeView.size() == 0 || _positiveView.size() == 0)	// If on extremity
 		return (false);
 	
 	return (_posCanBeCaptured(_negativeView, _positiveView, _stoneAtPos)
@@ -119,14 +162,13 @@ bool	LineView::canBeCaptured(void) const {
 
 
 bool	LineView::winCanBeCaptured(void) const {
-	if (_groupLen < Board::MinLenToWin)
+	if (!this->isWin() || _stoneAtPos == Stone::NONE)
 		return (false);
 
 	const size_t	extraLen = _groupLen - Board::MinLenToWin;	// Dandling bits on the side (if there is 6 aligned, we can just check the middle 4)
 	const size_t	lenToScan = _groupLen - 2 * extraLen;		// 5 -> 5, 6 -> 4 ... The lenght to check
 	const ssize_t	iStart = -((!_negativeView.size() || _negativeView[0].stone != _stoneAtPos) ? 0 : _negativeView[0].len) + extraLen;
 		
-	// std::cout << "winCanBeCaptured: " << static_cast<int>(extraLen) << " " << static_cast<int>(lenToScan) << " " << static_cast<int>(iStart) << " " << static_cast<int>(_iPos) << std::endl;
 	const StepDir	&vDir = getStepDir();
 	for (auto iStep = iStart; iStep < lenToScan; ++iStep) {
 		for (uint8_t iDir = 0; iDir < LineView::nDirection; ++iDir) {
@@ -135,7 +177,7 @@ bool	LineView::winCanBeCaptured(void) const {
 
 			const Position newPos(_pos.x + vDir.x * iStep, _pos.y + vDir.y * iStep);
 			const LineView	LV(_board, static_cast<LineView::Direction>(iDir), newPos);
-			
+
 			if (LV.canBeCaptured())
 				return (true);
 		}
@@ -143,25 +185,34 @@ bool	LineView::winCanBeCaptured(void) const {
 	return (false); 
 }
 
-// HERE TODO
-bool	LineView::_posMakesFree3(const SideView &nView, const SideView &pView, Stone stoneAt) {
-	(void)nView;
-	(void)pView;
-	(void)stoneAt;
-	// Chekc the paterns ...
-	return (false);
+bool	LineView::isFree4(void)	const {
+	if (_stoneAtPos == Stone::NONE || _groupLen != Board::MinLenToWin - 1)
+		return (false);
+
+	const size_t	pStart = _positiveView.getIndexNotStone(_stoneAtPos);
+	const size_t	nStart = _positiveView.getIndexNotStone(_stoneAtPos);
+
+	if (pStart >= _positiveView.size() && nStart >= _negativeView.size())	// If on edge
+		return (false);
+	// If Stone::NONE group after on each side
+	return (_positiveView[pStart].stone == Stone::NONE && _negativeView[nStart].stone == Stone::NONE);
 }
 
 
-// TODO: Board to win - 2 ?
-bool	LineView::makesFree3(void) const {
-	if (_iPos == 0 || _iPos == _lineLen - 1)	// If on extremity
+bool	LineView::isFree3(void) const {
+	if (_stoneAtPos == Stone::NONE)
 		return (false);
-	if (_lineLen < (Board::nCaptureToWin + 1)) // Or cannot make a 4 allign with 2 free on side because its too small
+	if (_negativeView.size() == 0 || _positiveView.size() == 0)	// If on extremity
+		return (false);
+	if (_lineLen < (Board::MinLenToWin + 1)) // Or cannot make a 4 allign with 2 free on side because its too small
+		return (false);
+	if (_groupLen + 2 > Board::MinLenToWin) // If we created a 4, no need to check
 		return (false);
 	
-	return (_posMakesFree3(_negativeView, _positiveView, _stoneAtPos)
-			|| _posMakesFree3(_positiveView, _negativeView, _stoneAtPos));	
+	const PlayerID	player = _stoneAtPos == Stone::P1 ? PlayerID::P1 : PlayerID::P2;
+
+	return (_posMakesFree3(_negativeView, _positiveView, player, _groupLen)
+			|| _posMakesFree3(_positiveView, _negativeView, player, _groupLen));	
 }
 
 

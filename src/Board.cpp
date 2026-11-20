@@ -28,7 +28,8 @@ Stone	Board::_positionHas5(const Position pos) const {
 
 	for (auto i = 0; i < LineView::nDirection; ++i) {
 		LineView	LV(*this, static_cast<LineView::Direction>(i), pos);
-		if (LV.getGroupLen() >= Board::MinLenToWin)
+		
+		if (LV.isWin())
 			return (getStoneAt(pos));
 	}
 	return (Stone::NONE);
@@ -36,7 +37,7 @@ Stone	Board::_positionHas5(const Position pos) const {
 
 
 void	Board::_iterOnWinPosition(void) {
-	static constexpr size_t	IndexToCheckByCol[MinLenToWin] = {4, 1, 3, 0, 2};
+	static constexpr size_t	IndexToCheckByCol[MinLenToWin] = {4, 1, 3, 0, 2};	// HardCoded ? care if MinLenToWin is changed
 
 	for (auto x = 0; x < BoardSize; ++x) {
 		for (auto y = IndexToCheckByCol[x % Board::MinLenToWin]; y < BoardSize; y += Board::MinLenToWin) {
@@ -65,7 +66,7 @@ bool	Board::_checkWinBy5(const Position pos, const PlayerID player) {
 	for (auto i = 0; i < LineView::nDirection; ++i) {
 		const LineView	LV(*this, static_cast<LineView::Direction>(i), pos);
 
-		if (LV.getGroupLen() >= Board::MinLenToWin) {
+		if (LV.isWin()) {
 			if (LV.winCanBeCaptured()) {
 				winCanBeCaptured = true;	// Check next turn
 			} else {
@@ -122,13 +123,15 @@ void	Board::_capture2(const Position pos, const PlayerID player) {
 }
 
 bool	Board::_makes2Free3(const Move move, const PlayerID player) const {
-	constexpr uint8_t	maxFree3 = 2;
-	uint8_t	nFree3 = 0;
+	constexpr uint16_t	maxFree3 = 2;
+	uint16_t			nFree3 = 0;
 
-	for (auto i = 0; i < LineView::nDirection && nFree3 < maxFree3; ++i) {
+	for (auto i = 0; i < LineView::nDirection; ++i) {
 		const LineView	LV(*this, static_cast<LineView::Direction>(i), move, player);
 
-		if (LV.makesFree3())
+		if (LV.isFree4() || LV.isWin())	// If move makes a free win
+			return (false);
+		if (nFree3 < maxFree3 && LV.isFree3())
 			++nFree3;
 	}
 	return (nFree3 >= maxFree3);
@@ -147,6 +150,8 @@ bool	Board::isMoveLegal(const Move move, const PlayerID player) const {
 bool	Board::hasLegalMove(const PlayerID player)	const {
 	for (auto x = 0; x < Board::BoardSize; ++x) {
 		for (auto y = 0; y < Board::BoardSize; ++y) {
+			if (_board[x][y] != Stone::NONE)
+				continue ;
 			if (isMoveLegal(Position(x, y), player))
 				return (true);
 		}
