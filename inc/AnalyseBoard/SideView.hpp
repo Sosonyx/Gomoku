@@ -46,11 +46,7 @@ class	SideView {
 			_size++;
 		};
 		inline void	push(const StoneGroup &stoneGroup) {
-			if (_size >= Board::BoardSize)
-				throw(std::runtime_error("StoneGroup.push(): _size == N"));
-			_arr[_size] = stoneGroup;
-			_len += stoneGroup.len;
-			_size++;
+			push(stoneGroup.len, stoneGroup.stone);
 		};
 		inline void	pop(void) {
 			if (_size == 0)
@@ -69,6 +65,19 @@ class	SideView {
 				throw(std::runtime_error("const StoneGroup[] call is OOB"));
 			return (_arr[n]);
 		}
+
+		// Returns first index that isnt Stone from player, returns >= size() on error
+		inline size_t	getIndexNotStone(const Stone stone) const {
+			if (_size == 0)
+				return (0);
+			if (_arr[0].stone == stone)	// If we match the center, then skip
+				return (1);
+			return (0);
+		}
+		inline size_t	getIndexNotStone(const PlayerID player) const {
+			return (getIndexNotStone(toStone(player)));
+		}
+
 
 		bool	makesCapture2(const PlayerID player) const;
 };

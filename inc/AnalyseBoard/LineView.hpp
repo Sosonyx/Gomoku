@@ -66,6 +66,10 @@ class LineView {
 		
 		// only checks 0xXsy and yxX0, so it needs to be calls invertion + and - views (X is stoneAt)
 		static bool		_posCanBeCaptured(const SideView &nView, const SideView &pView, Stone stoneAt);
+		
+		// only checks 2 paterns, so need revers and 2 calls gngngn
+		// only checks 0xXsy and yxX0, so it needs to be calls invertion + and - views (X is stoneAt)
+		static bool		_posMakesFree3(const SideView &nView, const SideView & pView,const PlayerID player, const size_t groupLen);
 
 	public:
 		LineView(const LineView &) = delete;
@@ -85,8 +89,22 @@ class LineView {
 		const SideView	&getViewNegative(void) const;
 		const SideView	&getViewPositive(void) const;	// View to the right / bot in the vertical case
 
-		// Check if our winning position can be taken
+		// 4 aligned with Stone:NONE on both sides
+		
+		
+		inline bool	isWin(void)	const {
+			return (_groupLen >= Board::MinLenToWin);
+		}
+		
+		// Position Creates a free 4
+		bool	isFree4(void)	const;
+		// Position Creates a free 3
+		bool	isFree3(void)	const;
+
+		// Position can be captured
 		bool	canBeCaptured(void) const;
+
+		// Check if our winning position can be taken
 		bool	winCanBeCaptured(void) const;
 
 		// Return a vector for the steping, based on our dir,s Always positive
