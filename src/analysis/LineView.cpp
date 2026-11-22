@@ -25,7 +25,7 @@ constexpr Board::size_t	LineView::_getIPos(const Position &pos, const Direction 
 	return (0);
 }
 
-SideView	LineView::_getView(const Board &board, const Position pos, const StepDir& sDir) {
+SideView	LineView::_getView(const Grid &grid, const Position pos, const StepDir& sDir) {
 	auto	getDistOnAxis = [](const size_t posAxis, const ssize_t stepAxis) -> Board::size_t {
 		if (!stepAxis)
 			return (Board::BoardSize);
@@ -41,13 +41,13 @@ SideView	LineView::_getView(const Board &board, const Position pos, const StepDi
 	SideView	view;
 	
 	size_t	groupLen = 1;
-	Stone	groupStone = board[pos.x + sDir.x, pos.y + sDir.y];
+	Stone	groupStone = grid[pos.x + sDir.x][pos.y + sDir.y];
 
 	for (auto iStep = 2; iStep <= nStep; ++iStep) {
 		const size_t nX = pos.x + (sDir.x * iStep);
 		const size_t nY = pos.y + (sDir.y * iStep);
 
-		const Stone stoneAtN = board[nX, nY];
+		const Stone stoneAtN = grid[nX][nY];
 		if (stoneAtN == groupStone) {
 			++groupLen;
 		} else {
@@ -69,22 +69,30 @@ Board::size_t	LineView::_getGroupLen(const SideView &nView, const SideView &pVie
 	return (nLen + 1 + pLen);
 }
 
-LineView::LineView(const Board &board, Direction dir, const Position pos)
-:		_board(board), _pos(pos), _stoneAtPos(board.getStoneAt(pos)), _dir(dir),
+LineView::LineView(const Grid &grid, Direction dir, const Position pos)
+:		_grid(grid), _pos(pos), _stoneAtPos(grid[pos.x][pos.y]), _dir(dir),
 		_lineLen(_getLineLen(pos, dir)),
 		_iPos(_getIPos(pos, dir)),
-		_negativeView(_getView(_board, pos, -LineView::getStepDir(dir))),
-		_positiveView(_getView(_board, pos, LineView::getStepDir(dir))),
+		_negativeView(_getView(_grid, pos, -LineView::getStepDir(dir))),
+		_positiveView(_getView(_grid, pos, LineView::getStepDir(dir))),
 		_groupLen(_getGroupLen(_negativeView, _positiveView, _stoneAtPos))
 {}
 
-LineView::LineView(const Board &board, Direction dir, const Move move, PlayerID playerID)	// Look at a move
-:		_board(board), _pos(move), _stoneAtPos(toStone(playerID)), _dir(dir),
+LineView::LineView(const Grid &grid, Direction dir, const Move move, PlayerID playerID)	// Look at a move
+:		_grid(grid), _pos(move), _stoneAtPos(toStone(playerID)), _dir(dir),
 		_lineLen(_getLineLen(move, dir)),
 		_iPos(_getIPos(move, dir)),
-		_negativeView(_getView(_board, move, -LineView::getStepDir(dir))),
-		_positiveView(_getView(_board, move, LineView::getStepDir(dir))),
+		_negativeView(_getView(_grid, move, -LineView::getStepDir(dir))),
+		_positiveView(_getView(_grid, move, LineView::getStepDir(dir))),
 		_groupLen(_getGroupLen(_negativeView, _positiveView, _stoneAtPos))
+{}
+
+LineView::LineView(const Board &board, Direction dir, const Position pos)
+:		LineView(board.grid(), dir, pos)
+{}
+
+LineView::LineView(const Board &board, Direction dir, const Move move, PlayerID playerID)
+:		LineView(board.grid(), dir, move, playerID)
 {}
 
 const SideView	&LineView::getViewNegative(void) const {
@@ -176,7 +184,7 @@ bool	LineView::winCanBeCaptured(void) const {
 				continue ;
 
 			const Position newPos(_pos.x + vDir.x * iStep, _pos.y + vDir.y * iStep);
-			const LineView	LV(_board, static_cast<LineView::Direction>(iDir), newPos);
+			const LineView	LV(_grid, static_cast<LineView::Direction>(iDir), newPos);
 
 			if (LV.canBeCaptured())
 				return (true);

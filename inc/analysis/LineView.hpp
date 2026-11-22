@@ -22,6 +22,7 @@ class LineView {
 	public:
 		using	ssize_t = Board::ssize_t;
 		using	size_t = Board::size_t;
+		using	Grid = Board::BoardArr<Stone>;	// Anything exposing a raw grid (Board, SearchState) can be analysed
 
 		enum Direction: uint8_t {
 			HORIZONTAL,
@@ -42,7 +43,7 @@ class LineView {
 		};
 
 	private:
-		const Board		&_board;
+		const Grid		&_grid;
 
 		const Position	_pos;
 		const Stone		_stoneAtPos;
@@ -60,7 +61,7 @@ class LineView {
 		static constexpr size_t	_getLineLen(const Position &pos, const Direction dir);
 		static constexpr size_t	_getIPos(const Position &pos, const Direction dir);
 		
-		static SideView	_getView(const Board &board, const Position pos, const StepDir& sDir);
+		static SideView	_getView(const Grid &grid, const Position pos, const StepDir& sDir);
 		// Calculate the len of consecutive pieces of the _stoneAtPos type at _pos in _dir direction
 		static size_t	_getGroupLen(const SideView &nView, const SideView &pView, Stone stoneAt);
 		
@@ -75,8 +76,12 @@ class LineView {
 		LineView(const LineView &) = delete;
 		LineView(void) = delete;
 
-		LineView(const Board &board, Direction dir, const Position pos);					// Look at a position
-		LineView(const Board &board, Direction dir, const Move move, PlayerID playerID);	// Look at a move
+		LineView(const Grid &grid, Direction dir, const Position pos);					// Look at a position
+		LineView(const Grid &grid, Direction dir, const Move move, PlayerID playerID);	// Look at a move
+
+		// Same, straight from a Board
+		LineView(const Board &board, Direction dir, const Position pos);
+		LineView(const Board &board, Direction dir, const Move move, PlayerID playerID);
 		
 		inline size_t	getLen(void) const {	// Returns the line len
 			return (_lineLen);

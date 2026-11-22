@@ -123,6 +123,8 @@ class Board
 			return (_board[x][y]);
 		}
 
+		inline const BoardArr<Stone>	&grid(void)	const {	return (_board);	}
+
 		inline bool	done(void)	const {	return (_done);	}
 
 		inline Stone	getWinner(void)	const {

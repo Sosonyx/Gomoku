@@ -20,5 +20,4 @@ struct SearchState {
 
     int generateMoves(Move moves[]) const;
 
-    bool makesFive(int x, int y) const;
 };

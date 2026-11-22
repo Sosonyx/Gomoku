@@ -10,6 +10,7 @@ SRC =  	main.cpp  \
 		analysis/SideView.cpp	\
 		search/Search.cpp	\
 		search/SearchState.cpp	\
+		search/Evaluate.cpp	\
 
 D_SRC = src/
 
