@@ -3,7 +3,6 @@ NAME =  Gomoku
 SRC =  	main.cpp  \
 		Board.cpp  \
 		Game.cpp	\
-		Player.cpp  \
 		Render.cpp	\
 		AnalyseBoard/LineView.cpp	\
 		AnalyseBoard/SideView.cpp	\
