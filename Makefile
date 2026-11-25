@@ -2,10 +2,10 @@ NAME =  Gomoku
 
 SRC =  	main.cpp  \
 		board/Board.cpp  \
+		board/BoardDebug.cpp  \
 		game/Game.cpp	\
 		game/Player.cpp	\
 		render/Render.cpp	\
-		analysis/Analyse.cpp	\
 		analysis/LineView.cpp	\
 		analysis/SideView.cpp	\
 		search/Search.cpp	\

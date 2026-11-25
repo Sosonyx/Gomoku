@@ -1,6 +1,7 @@
 #include "board/Board.hpp"
 #include "game/Game.hpp"
 #include "analysis/LineView.hpp"
+#include "board/RestoreMoveInfo.hpp"
 
 #include <stdexcept>
 
@@ -8,18 +9,6 @@ Board::Board(const Settings &settings)
 :	_settings(settings)
 {
 	std::memset(_board, static_cast<uint8_t>(Stone::NONE), sizeof(_board));
-}
-
-Board::Board(const Board &oldBoard, const Move &playedMove, const PlayerID player)
-:	_settings(oldBoard._settings)
-{
-	_nCapture[0] = oldBoard._nCapture[0];
-	_nCapture[1] = oldBoard._nCapture[1];
-	_nStone[0] = oldBoard._nStone[0];
-	_nStone[1] = oldBoard._nStone[1];
-
-	std::memcpy(_board, oldBoard._board, sizeof(_board));
-	playStone(playedMove, player);	// Update board
 }
 
 Stone	Board::_positionHas5(const Position pos) const {
@@ -34,7 +23,6 @@ Stone	Board::_positionHas5(const Position pos) const {
 	}
 	return (Stone::NONE);
 }
-
 
 void	Board::_iterOnWinPosition(void) {
 	static constexpr size_t	IndexToCheckByCol[MinLenToWin] = {4, 1, 3, 0, 2};	// HardCoded ? care if MinLenToWin is changed
@@ -97,27 +85,31 @@ bool	Board::_checkWinner(const Position pos, const PlayerID player) {
 	return (_done);
 }
 
-void	Board::_capture2(const Position pos, const PlayerID player) {
+void	Board::_capture2(const Position pos, const PlayerID player, RestoreMoveInfo *pRMI) {
 	if (!_settings.capture2)	return ;
 	
 	for (auto i = 0; i < LineView::nDirection; ++i) {
-		const LineView	LV(*this, static_cast<LineView::Direction>(i), pos);
+		const LineView::Direction	dir = static_cast<LineView::Direction>(i);
+		const LineView	LV(*this, dir, pos);
+	
 		auto nView = LV.getViewNegative();
 		auto pView = LV.getViewPositive();
 
 		if (nView.makesCapture2(player)) {
 			const StepDir	stepDirN = -LV.getStepDir();
 
-			_placeAt(pos.x + stepDirN.x, pos.y + stepDirN.y, Stone::NONE);			
-			_placeAt(pos.x + 2 * stepDirN.x, pos.y + 2 * stepDirN.y, Stone::NONE);
 			++_nCapture[toInt(player)];
+			_placeStoneAt(pos.x + stepDirN.x, pos.y + stepDirN.y, Stone::NONE);			
+			_placeStoneAt(pos.x + 2 * stepDirN.x, pos.y + 2 * stepDirN.y, Stone::NONE);
+			if (pRMI != nullptr)	pRMI->addCapture(dir, LineView::DirectionSign::NEGATIVE);
 		}
 		if (pView.makesCapture2(player)) {
 			const StepDir	stepDirP = LV.getStepDir();
 			
-			_placeAt(pos.x + stepDirP.x, pos.y + stepDirP.y, Stone::NONE);			
-			_placeAt(pos.x + 2 * stepDirP.x, pos.y + 2 * stepDirP.y, Stone::NONE);			
 			++_nCapture[toInt(player)];
+			_placeStoneAt(pos.x + stepDirP.x, pos.y + stepDirP.y, Stone::NONE);			
+			_placeStoneAt(pos.x + 2 * stepDirP.x, pos.y + 2 * stepDirP.y, Stone::NONE);			
+			if (pRMI != nullptr)	pRMI->addCapture(dir, LineView::DirectionSign::POSITIVE);
 		}
 	}
 }
@@ -159,16 +151,67 @@ bool	Board::hasLegalMove(const PlayerID player)	const {
 	return (false);
 }
 
-void	Board::playStone(const Move move, const PlayerID player) {
+void	Board::_playStone(const Move move, const PlayerID player, RestoreMoveInfo *pRMI)
+{
 	if (!isMoveLegal(move, player))
 		throw (std::runtime_error("Stone played on board is not legal"));
 
-	_placeAt(move, toStone(player));
-	++_nStone[toInt(player)];
+	_placeStoneAt(move, toStone(player));
 
 	if (_settings.capture2)
-		_capture2(move, player);
+		_capture2(move, player, pRMI);
 	_checkWinner(move, player);
+}
+
+void	Board::playStone(const Move move, const PlayerID player)
+{
+	_playStone(move, player);
+}
+
+RestoreMoveInfo	Board::RMI_playStone(const Move move, const PlayerID player)
+{
+	RestoreMoveInfo	RMI(move, player, _lastMoveWinner, _lastMoveWinningPos);
+	_playStone(move, player, &RMI);
+	return (RMI);
+}
+void			Board::RestoreMove(const RestoreMoveInfo RMI)
+{
+	const Stone	stoneMove = getStoneAt(RMI._move);
+	if (stoneMove == Stone::NONE)
+		throw ("Board::RestoreMove called with a nonexisting move");
+
+	std::cout << *this;
+	const PlayerID	playerMove = toPlayer(stoneMove);
+
+	_placeStoneAt(RMI._move, Stone::NONE);
+	_lastMoveWinner = RMI._lastMoveWinner;
+	_lastMoveWinningPos = RMI._lastMoveWinningPos;
+
+	_winner = Stone::NONE;
+	_done = false;
+
+	if (RMI.captured())
+	{
+		const Move		move = RMI._move;
+		const Stone		stoneOther = getOther(stoneMove);
+
+		for (auto i = 0; i < LineView::nDirection; ++i) {
+			const LineView::Direction	dir = static_cast<LineView::Direction>(i);
+			const StepDir	stepDir = LineView::getStepDir(dir);
+
+			if (RMI.captured(dir, LineView::DirSign::POSITIVE)) {
+				_placeStoneAt(move.x + stepDir.x, move.y + stepDir.y, stoneOther);			
+				_placeStoneAt(move.x + 2 * stepDir.x, move.y + 2 * stepDir.y, stoneOther);
+				--_nCapture[toInt(playerMove)];
+			}
+			if (RMI.captured(dir, LineView::DirSign::NEGATIVE)) {
+				_placeStoneAt(move.x - stepDir.x, move.y - stepDir.y, stoneOther);			
+				_placeStoneAt(move.x - 2 * stepDir.x, move.y - 2 * stepDir.y, stoneOther);			
+				--_nCapture[toInt(playerMove)];
+			}
+		}
+		std::cout << *this;
+	}
 }
 
 void	Board::_updateInsideAnalyse(const Position pos) {
@@ -179,7 +222,3 @@ uint16_t Board::getCapture(PlayerID player) const {
 	return (_nCapture[toInt(player)]);
 }
 
-// Test	
-// uint64_t Board::evaluate(const Board &b, PlayerID p) {
-//     return 0;
-// }
