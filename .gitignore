@@ -1,3 +1,4 @@
 Gomoku
 .build/
 lib/
+vgcore*

@@ -190,9 +190,9 @@ bool	LineView::isFree4(void)	const {
 		return (false);
 
 	const size_t	pStart = _positiveView.getIndexNotStone(_stoneAtPos);
-	const size_t	nStart = _positiveView.getIndexNotStone(_stoneAtPos);
+	const size_t	nStart = _negativeView.getIndexNotStone(_stoneAtPos);
 
-	if (pStart >= _positiveView.size() && nStart >= _negativeView.size())	// If on edge
+	if (pStart >= _positiveView.size() || nStart >= _negativeView.size())	// If on edge
 		return (false);
 	// If Stone::NONE group after on each side
 	return (_positiveView[pStart].stone == Stone::NONE && _negativeView[nStart].stone == Stone::NONE);
