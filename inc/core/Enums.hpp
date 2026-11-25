@@ -27,6 +27,13 @@ PlayerID	getOther(const PlayerID id) {
 }
 
 static inline constexpr
+PlayerID	toPlayer(const Stone stone) {
+	if (stone == Stone::NONE)
+		throw ("toPlayer called with Stone::NONE");
+	return (stone == Stone::P1 ? PlayerID::P1 : PlayerID::P2);
+}
+
+static inline constexpr
 int	toInt(const PlayerID id) {
 	return (id == PlayerID::P1 ? 0 : 1);
 }

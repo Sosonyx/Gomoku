@@ -209,7 +209,7 @@ bool	LineView::isFree3(void) const {
 	if (_groupLen + 2 > Board::MinLenToWin) // If we created a 4, no need to check
 		return (false);
 	
-	const PlayerID	player = _stoneAtPos == Stone::P1 ? PlayerID::P1 : PlayerID::P2;
+	const PlayerID	player = toPlayer(_stoneAtPos);
 
 	return (_posMakesFree3(_negativeView, _positiveView, player, _groupLen)
 			|| _posMakesFree3(_positiveView, _negativeView, player, _groupLen));	

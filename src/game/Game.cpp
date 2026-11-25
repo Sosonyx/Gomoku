@@ -2,6 +2,9 @@
 #include "analysis/LineView.hpp"
 #include "search/Search.hpp"
 
+#include "board/RestoreMoveInfo.hpp"
+
+
 #include <chrono>
 
 Stone	Game::_startGame() {
@@ -27,6 +30,7 @@ Stone	Game::_startGame() {
 			continue; // temporary, just to test the loop
 		}
 		board.playStone(move, turn);
+
 		const auto moveEnd = std::chrono::steady_clock::now();
 		lastMoveTime = std::chrono::duration<double>(moveEnd - moveStart).count();
 		lastPlayer = turn;
@@ -49,26 +53,17 @@ bool	Game::_menu() {
 		while (SDL_PollEvent(&event)) {
 			if (event.type == SDL_QUIT)
 				return (true);
-			if (event.type == SDL_MOUSEBUTTONDOWN
-				&& event.button.button == SDL_BUTTON_LEFT
-				&& _render.isStartButton(event.button.x, event.button.y))
-				return (false);
-			if (event.type == SDL_MOUSEBUTTONDOWN
-				&& event.button.button == SDL_BUTTON_LEFT
-				&& _render.isExitButton(event.button.x, event.button.y))
-				return (true);
-			if (event.type == SDL_MOUSEBUTTONDOWN
-				&& event.button.button == SDL_BUTTON_LEFT
-				&& _render.isPlayerButton(PlayerID::P1,
-					event.button.x, event.button.y))
-				_players[0] = _players[0] == PlayerType::AI
-					? PlayerType::HUMAN : PlayerType::AI;
-			if (event.type == SDL_MOUSEBUTTONDOWN
-				&& event.button.button == SDL_BUTTON_LEFT
-				&& _render.isPlayerButton(PlayerID::P2,
-					event.button.x, event.button.y))
-				_players[1] = _players[1] == PlayerType::AI
-					? PlayerType::HUMAN : PlayerType::AI;
+			if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+			{
+				if (_render.isStartButton(event.button.x, event.button.y))
+					return (false);
+				else if (_render.isExitButton(event.button.x, event.button.y))
+					return (true);
+				else if (_render.isPlayerButton(PlayerID::P1, event.button.x, event.button.y))
+					_players[0] = _players[0] == PlayerType::AI ? PlayerType::HUMAN : PlayerType::AI;
+				else if (_render.isPlayerButton(PlayerID::P2, event.button.x, event.button.y))
+					_players[1] = _players[1] == PlayerType::AI	? PlayerType::HUMAN : PlayerType::AI;
+			}
 			if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_ESCAPE)
 				return (true);
 		}

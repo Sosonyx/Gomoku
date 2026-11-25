@@ -8,6 +8,8 @@
 
 #include "core/Enums.hpp"
 
+class RestoreMoveInfo;
+
 struct Settings;
 
 namespace BoardConfig {
@@ -60,13 +62,15 @@ class Board
 	private:
 
 		bool	_makes2Free3(const Move move, const PlayerID _player)	const;
-		void	_capture2(const Move move, const PlayerID _player);
+		// Handle captures
+		void	_capture2(const Move move, const PlayerID _player, RestoreMoveInfo *pRMI = nullptr);
 	
+		void	_playStone(const Move move, const PlayerID player, RestoreMoveInfo *pRMI = nullptr);
 		
 		Stone	_positionHas5(const Position pos) const;
 		Stone	_positionHas5(const size_t x, const size_t y) const
 		{	return (_positionHas5(Position(x, y)));	};
-		
+
 		void	_iterOnWinPosition(void);
 
 		bool	_checkLastMoveWin(void);
@@ -88,24 +92,38 @@ class Board
 		// Todo: Look at the type system and if it could help me
 		void	_updateInsideAnalyse(const Position pos);
 
-		inline void	_placeAt(const Position pos, const Stone stone) {
+		// Updates stone count based on previous stone
+		// must be called to change _board, expects a valid position
+		inline void	_placeStoneAt(const Position pos, const Stone stone) {
+			const Stone	oldStone = getStoneAt(pos);
+	
+			if (stone == oldStone)
+				return;
 			_board[pos.x][pos.y] = stone;
+			if (stone != Stone::NONE)
+				++_nStone[toInt(toPlayer(stone))];
+			if (oldStone != Stone::NONE)
+				--_nStone[toInt(toPlayer(oldStone))];
 			_updateInsideAnalyse(pos);
 		}
-		inline void	_placeAt(const size_t x, const size_t y, const Stone stone) {
-			_board[x][y] = stone;
-			_updateInsideAnalyse(Position(x, y));
+
+		inline void	_placeStoneAt(const size_t x, const size_t y, const Stone stone) {
+			_placeStoneAt(Position(x, y), stone);
 		}
 
 	public:
 		Board(const Settings &settings);
-		Board(const Board &oldBoard, const Move &playedMove, const PlayerID player);
+		Board(const Board &oldBoard) = default;
 
 		bool	hasLegalMove(const PlayerID player)	const;
 
 		bool	isMoveLegal(const Move move, const PlayerID player)	const;
 		void	playStone(const Move move, const PlayerID player);
 
+		// Get RestoreMoveInfo of a Move
+		RestoreMoveInfo	RMI_playStone(const Move move, const PlayerID player);
+		// Restore the board from a Move
+		void			RestoreMove(const RestoreMoveInfo RMI);
 		
 		inline Stone	getStoneAt(const size_t x, const size_t y) const{
 			if (x >= BoardSize || y >= BoardSize)
@@ -114,12 +132,12 @@ class Board
 		}
 		inline Stone	getStoneAt(const Position &pos) const{
 			if (pos.x >= BoardSize || pos.y >= BoardSize)
-				throw (std::runtime_error("getStone call is OOB"));
+				throw (std::runtime_error("getStoneAt call is OOB"));
 			return (_board[pos.x][pos.y]);
 		}
 		inline Stone	operator[](const size_t x, const size_t y) const{
 			if (x >= BoardSize || y >= BoardSize) 
-				throw (std::runtime_error("getStone call is OOB"));
+				throw (std::runtime_error("const Board[x, y] call is OOB"));
 			return (_board[x][y]);
 		}
 
@@ -144,4 +162,6 @@ class Board
 
 		uint64_t evaluate(const Board &b, PlayerID p);
 		uint16_t getCapture(PlayerID player) const;
+
+		friend std::ostream &operator<<(std::ostream &os, const Board &board);
 };

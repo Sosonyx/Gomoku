@@ -30,6 +30,12 @@ class LineView {
 			MINUS_DIAG	// Line equation is: y = -x	// Goes left-down to right-up because of screen coordinate system
 		};
 	
+		enum DirectionSign: uint8_t {
+			POSITIVE,
+			NEGATIVE,
+		};
+		using DirSign = LineView::DirectionSign;
+	
 		static constexpr uint8_t	nViewDirection = 2;
 		static constexpr uint8_t	nDirection = 4;
 		
