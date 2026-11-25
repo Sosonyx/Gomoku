@@ -1,8 +1,4 @@
-#include "Game.hpp"
-#include "LineView.hpp"
-#include "SideView.hpp"
-
-#include <SDL2/SDL.h>
+#include "game/Game.hpp"
 
 int	main(void)
 {

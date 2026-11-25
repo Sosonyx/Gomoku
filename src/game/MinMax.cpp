@@ -1,5 +1,5 @@
 #include <vector>
-#include "Board.hpp"
+#include "board/Board.hpp"
 
 // Score Flat, pas de recursivite
 // Player is us or the other

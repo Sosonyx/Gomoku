@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <iostream>
 
-#include "Enums.hpp"
+#include "core/Enums.hpp"
 
 struct Settings;
 
@@ -141,4 +141,7 @@ class Board
 			}
 			return (_winner);
 		}
+
+		uint64_t evaluate(const Board &b, PlayerID p);
+		uint16_t getCapture(PlayerID player) const;
 };

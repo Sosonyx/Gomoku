@@ -1,6 +1,6 @@
-#include "Board.hpp"
-#include "Game.hpp"
-#include "LineView.hpp"
+#include "board/Board.hpp"
+#include "game/Game.hpp"
+#include "analysis/LineView.hpp"
 
 #include <stdexcept>
 
@@ -161,7 +161,7 @@ bool	Board::hasLegalMove(const PlayerID player)	const {
 
 void	Board::playStone(const Move move, const PlayerID player) {
 	if (!isMoveLegal(move, player))
-		throw ("Stone played on board is not legal");
+		throw (std::runtime_error("Stone played on board is not legal"));
 
 	_placeAt(move, toStone(player));
 	++_nStone[toInt(player)];
@@ -174,3 +174,12 @@ void	Board::playStone(const Move move, const PlayerID player) {
 void	Board::_updateInsideAnalyse(const Position pos) {
 	(void)pos;
 }
+
+uint16_t Board::getCapture(PlayerID player) const {
+	return (_nCapture[toInt(player)]);
+}
+
+// Test	
+// uint64_t Board::evaluate(const Board &b, PlayerID p) {
+//     return 0;
+// }

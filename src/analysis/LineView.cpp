@@ -1,4 +1,4 @@
-#include "LineView.hpp"
+#include "analysis/LineView.hpp"
 
 constexpr Board::size_t	LineView::_getLineLen(const Position &pos, const Direction dir) {
 	if (dir == Direction::HORIZONTAL || dir == Direction::VERTICAL)

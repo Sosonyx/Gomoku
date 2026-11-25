@@ -5,9 +5,9 @@
 
 #include <cstdint>
 
-#include "Render.hpp"
-#include "Board.hpp"
-#include "Enums.hpp"
+#include "render/Render.hpp"
+#include "board/Board.hpp"
+#include "core/Enums.hpp"
 
 enum	GameMode
 {
@@ -25,9 +25,10 @@ struct Settings
 
 class Game {
 	private:
-		Render	_render;
+		Render	&_render;
 
 		Settings	_settings;
+		PlayerType	_players[2] = {PlayerType::HUMAN, PlayerType::HUMAN};
 
 	private:
 		Game(Render &render);
