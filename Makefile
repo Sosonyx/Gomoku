@@ -6,6 +6,8 @@ SRC =  	main.cpp  \
 		Render.cpp	\
 		AnalyseBoard/LineView.cpp	\
 		AnalyseBoard/SideView.cpp	\
+		\
+		MinMax/Score.cpp	\
 
 D_SRC = src/
 
