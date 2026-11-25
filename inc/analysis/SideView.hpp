@@ -62,15 +62,7 @@ class	SideView {
 		};
 		inline const StoneGroup	&operator[](size_t n) const {
 			if (n >= _size)
-			{
-				std::cout << '[';
-				for (auto i = 0; i < this->size(); ++i)	
-					std::cout << this->operator[](i);
-				std::cout << ']' << std::endl;
-				std::cout << std::format("Size: {}, Called: {}", this->size(), n) << std::endl;
-				*((char *)0) = 2;
 				throw(std::runtime_error("const StoneGroup[] call is OOB"));
-			}
 			return (_arr[n]);
 		}
 
