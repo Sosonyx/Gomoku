@@ -1,5 +1,6 @@
 #pragma once
 
+#include "board/Move.hpp"
 #include "board/Board.hpp"
 #include "core/Enums.hpp"
 #include "analysis/LineView.hpp"

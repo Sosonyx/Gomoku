@@ -7,28 +7,12 @@
 #include <iostream>
 
 #include "core/Enums.hpp"
+#include "board/BoardConfig.hpp"
+#include "board/Move.hpp"
 
 class RestoreMoveInfo;
 
 struct Settings;
-
-namespace BoardConfig {
-	using ssize_t	= int8_t;
-	using size_t	= uint8_t;
-	inline constexpr size_t nCaptureToWin	= 5u;
-	inline constexpr size_t MinLenToWin		= 5u;
-	inline constexpr size_t BoardSize		= 19u;
-}
-
-struct Move
-{
-	using	size_t = BoardConfig::size_t;
-	size_t x = 0;
-	size_t y = 0;
-	inline Move(void):	x(0), y(0) {};
-	inline Move(const size_t _x,const size_t _y):	x(_x), y(_y)  {}
-};
-using Position = Move;
 
 class Board
 {
@@ -47,8 +31,8 @@ class Board
 	private:
 		BoardArr<Stone> 	_board;
 
-		size_t	_nCapture[2] = {0, 0};
-		size_t	_nStone[2]  = {0, 0};
+		size_t		_nCapture[2] = {0, 0};
+		uint16_t	_nStone[2]  = {0, 0};
 
 		// Did we have a winner last move
 		Stone		_lastMoveWinner = Stone::NONE;
@@ -141,6 +125,7 @@ class Board
 			return (_board[x][y]);
 		}
 
+		inline bool	empty(void)	const {	return (_nStone[0] == 0 && _nStone[1] == 0);	}
 		inline bool	done(void)	const {	return (_done);	}
 
 		inline Stone	getWinner(void)	const {

@@ -161,6 +161,8 @@ void	Board::_playStone(const Move move, const PlayerID player, RestoreMoveInfo *
 	if (_settings.capture2)
 		_capture2(move, player, pRMI);
 	_checkWinner(move, player);
+	if (!_done && !hasLegalMove(getOther(player)))
+		_setWinner(Stone::NONE);
 }
 
 void	Board::playStone(const Move move, const PlayerID player)
@@ -180,7 +182,6 @@ void			Board::RestoreMove(const RestoreMoveInfo RMI)
 	if (stoneMove == Stone::NONE)
 		throw ("Board::RestoreMove called with a nonexisting move");
 
-	std::cout << *this;
 	const PlayerID	playerMove = toPlayer(stoneMove);
 
 	_placeStoneAt(RMI._move, Stone::NONE);
@@ -210,7 +211,7 @@ void			Board::RestoreMove(const RestoreMoveInfo RMI)
 				--_nCapture[toInt(playerMove)];
 			}
 		}
-		std::cout << *this;
+		// std::cout << *this;
 	}
 }
 

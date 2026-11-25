@@ -1,15 +1,17 @@
 NAME =  Gomoku
 
 SRC =  	main.cpp  \
+		board/Move.cpp  \
 		board/Board.cpp  \
 		board/BoardDebug.cpp  \
 		game/Game.cpp	\
-		game/Player.cpp	\
 		render/Render.cpp	\
 		analysis/LineView.cpp	\
 		analysis/SideView.cpp	\
 		search/Search.cpp	\
 		search/SearchState.cpp	\
+		\
+		MinMax.cpp\
 
 D_SRC = src/
 
